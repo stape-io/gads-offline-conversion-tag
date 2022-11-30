@@ -213,7 +213,7 @@ function addCartData(eventData, mappedData) {
     }
 
     if (items || data.merchantId || data.feedCountryCode || data.feedLanguageCode || data.localTransactionCost) {
-        eventData.cartData = {};
+        mappedData.cartData = {};
 
         if (items) mappedData.cartData.items = items;
 
