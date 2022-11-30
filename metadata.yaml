@@ -1,4 +1,6 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: bd49b3ce034234c5b997f46b50a65676c108e14b
+    changeNotes: Add Operating Customer.
   - sha: 7644a65be1d6fe8a6c4a5fe843d1d7784cb01991
     changeNotes: Initial release.
