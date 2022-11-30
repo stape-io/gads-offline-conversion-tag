@@ -121,7 +121,7 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
     if (data.developerTokenOwn) {
-        return 'https://googleads.googleapis.com/v11/customers/'+enc(data.customerId)+':uploadClickConversions';
+        return 'https://googleads.googleapis.com/v11/customers/'+enc(data.opCustomerId)+':uploadClickConversions';
     }
 
     const containerKey = data.containerKey.split(':');
@@ -136,7 +136,7 @@ function getData() {
     const eventData = getAllEventData();
     let mappedData = {
         'conversionEnvironment': data.conversionEnvironment,
-        'conversionAction': 'customers/'+data.customerId+'/conversionActions/'+data.conversionAction,
+        'conversionAction': 'customers/'+data.opCustomerId+'/conversionActions/'+data.conversionAction,
     };
 
     if (data.customDataList) {
@@ -144,7 +144,7 @@ function getData() {
 
         data.customDataList.forEach((d) => {
             customVariables.push({
-                'conversionCustomVariable': 'customers/'+data.customerId+'/conversionCustomVariables/'+d.conversionCustomVariable,
+                'conversionCustomVariable': 'customers/'+data.opCustomerId+'/conversionCustomVariables/'+d.conversionCustomVariable,
                 'value': d.value
             });
         });
@@ -428,6 +428,7 @@ function convertTimestampToISO(timestamp) {
 
     startMonth = startMonth < 10 ? '0' + startMonth : startMonth;
     startDate = startDate < 10 ? '0' + startDate : startDate;
+    startDate = startDate === '00' ? '01' : startDate;
     hoursSinceYesterday =
         hoursSinceYesterday < 10 ? '0' + hoursSinceYesterday : hoursSinceYesterday;
     minutesSinceYesterday =
