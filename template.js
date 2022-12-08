@@ -1,21 +1,21 @@
-const JSON = require("JSON");
-const sendHttpRequest = require("sendHttpRequest");
-const getContainerVersion = require("getContainerVersion");
-const logToConsole = require("logToConsole");
-const getRequestHeader = require("getRequestHeader");
-const encodeUriComponent = require("encodeUriComponent");
-const Firestore = require("Firestore");
-const getAllEventData = require("getAllEventData");
-const makeString = require("makeString");
-const makeNumber = require("makeNumber");
-const makeInteger = require("makeInteger");
-const getTimestampMillis = require("getTimestampMillis");
-const getType = require("getType");
-const sha256Sync = require("sha256Sync");
-const Math = require("Math");
+const JSON = require('JSON');
+const sendHttpRequest = require('sendHttpRequest');
+const getContainerVersion = require('getContainerVersion');
+const logToConsole = require('logToConsole');
+const getRequestHeader = require('getRequestHeader');
+const encodeUriComponent = require('encodeUriComponent');
+const Firestore = require('Firestore');
+const getAllEventData = require('getAllEventData');
+const makeString = require('makeString');
+const makeNumber = require('makeNumber');
+const makeInteger = require('makeInteger');
+const getTimestampMillis = require('getTimestampMillis');
+const getType = require('getType');
+const sha256Sync = require('sha256Sync');
+const Math = require('Math');
 
 const isLoggingEnabled = determinateIsLoggingEnabled();
-const traceId = getRequestHeader("trace-id");
+const traceId = getRequestHeader('trace-id');
 
 const postBody = getData();
 
@@ -35,11 +35,11 @@ function sendConversionRequest(accessToken, refreshToken) {
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
-        Name: "gAdsOfflineConversion",
-        Type: "Request",
+        Name: 'gAdsOfflineConversion',
+        Type: 'Request',
         TraceId: traceId,
         EventName: makeString(data.conversionActionId),
-        RequestMethod: "POST",
+        RequestMethod: 'POST',
         RequestUrl: postUrl,
         RequestBody: postBody,
       })
@@ -52,8 +52,8 @@ function sendConversionRequest(accessToken, refreshToken) {
       if (isLoggingEnabled) {
         logToConsole(
           JSON.stringify({
-            Name: "gAdsOfflineConversion",
-            Type: "Response",
+            Name: 'gAdsOfflineConversion',
+            Type: 'Response',
             TraceId: traceId,
             EventName: makeString(data.conversionActionId),
             ResponseStatusCode: statusCode,
@@ -71,44 +71,44 @@ function sendConversionRequest(accessToken, refreshToken) {
         data.gtmOnFailure();
       }
     },
-    { headers: getConversionRequestHeaders(accessToken), method: "POST" },
+    { headers: getConversionRequestHeaders(accessToken), method: 'POST' },
     JSON.stringify(postBody)
   );
 }
 
 function getConversionRequestHeaders(accessToken) {
   let headers = {
-    "Content-Type": "application/json",
-    Authorization: "Bearer " + accessToken,
-    "login-customer-id": data.customerId,
+    'Content-Type': 'application/json',
+    Authorization: 'Bearer ' + accessToken,
+    'login-customer-id': data.customerId,
   };
 
   if (data.developerTokenOwn) {
-    headers["developer-token"] = data.developerToken;
+    headers['developer-token'] = data.developerToken;
   }
 
   return headers;
 }
 
 function updateAccessToken(refreshToken) {
-  const authUrl = "https://www.googleapis.com/oauth2/v3/token";
+  const authUrl = 'https://www.googleapis.com/oauth2/v3/token';
   const authBody =
-    "refresh_token=" +
+    'refresh_token=' +
     enc(refreshToken || data.refreshToken) +
-    "&client_id=" +
+    '&client_id=' +
     enc(data.clientId) +
-    "&client_secret=" +
+    '&client_secret=' +
     enc(data.clientSecret) +
-    "&grant_type=refresh_token";
+    '&grant_type=refresh_token';
 
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
-        Name: "gAdsOfflineConversion",
-        Type: "Request",
+        Name: 'gAdsOfflineConversion',
+        Type: 'Request',
         TraceId: traceId,
-        EventName: "Auth",
-        RequestMethod: "POST",
+        EventName: 'Auth',
+        RequestMethod: 'POST',
         RequestUrl: authUrl,
       })
     );
@@ -120,10 +120,10 @@ function updateAccessToken(refreshToken) {
       if (isLoggingEnabled) {
         logToConsole(
           JSON.stringify({
-            Name: "gAdsOfflineConversion",
-            Type: "Response",
+            Name: 'gAdsOfflineConversion',
+            Type: 'Response',
             TraceId: traceId,
-            EventName: "Auth",
+            EventName: 'Auth',
             ResponseStatusCode: statusCode,
             ResponseHeaders: headers,
           })
@@ -144,8 +144,8 @@ function updateAccessToken(refreshToken) {
       }
     },
     {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      method: "POST",
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: 'POST',
     },
     authBody
   );
@@ -154,25 +154,25 @@ function updateAccessToken(refreshToken) {
 function getUrl() {
   if (data.developerTokenOwn) {
     return (
-      "https://googleads.googleapis.com/v11/customers/" +
+      'https://googleads.googleapis.com/v11/customers/' +
       enc(data.opCustomerId) +
-      ":uploadClickConversions"
+      ':uploadClickConversions'
     );
   }
 
-  const containerKey = data.containerKey.split(":");
+  const containerKey = data.containerKey.split(':');
   const containerZone = containerKey[0];
   const containerIdentifier = containerKey[1];
   const containerApiKey = containerKey[2];
 
   return (
-    "https://" +
+    'https://' +
     enc(containerIdentifier) +
-    "." +
+    '.' +
     enc(containerZone) +
-    ".stape.io/stape-api/" +
+    '.stape.io/stape-api/' +
     enc(containerApiKey) +
-    "/v1/gads/auth-proxy"
+    '/v1/gads/auth-proxy'
   );
 }
 
@@ -181,9 +181,9 @@ function getData() {
   let mappedData = {
     conversionEnvironment: data.conversionEnvironment,
     conversionAction:
-      "customers/" +
+      'customers/' +
       data.opCustomerId +
-      "/conversionActions/" +
+      '/conversionActions/' +
       data.conversionAction,
   };
 
@@ -193,9 +193,9 @@ function getData() {
     data.customDataList.forEach((d) => {
       customVariables.push({
         conversionCustomVariable:
-          "customers/" +
+          'customers/' +
           data.customerId +
-          "/conversionCustomVariables/" +
+          '/conversionCustomVariables/' +
           d.conversionCustomVariable,
         value: d.value,
       });
@@ -235,7 +235,7 @@ function addConversionAttribution(eventData, mappedData) {
 }
 
 function addCartData(eventData, mappedData) {
-  let currencyFromItems = "";
+  let currencyFromItems = '';
   let valueFromItems = 0;
   let items = data.items;
 
@@ -315,10 +315,10 @@ function addCartData(eventData, mappedData) {
     mappedData.conversionValue = makeNumber(eventData.value);
   else if (eventData.conversionValue)
     mappedData.conversionValue = makeNumber(eventData.conversionValue);
-  else if (eventData["x-ga-mp1-ev"])
-    mappedData.conversionValue = makeNumber(eventData["x-ga-mp1-ev"]);
-  else if (eventData["x-ga-mp1-tr"])
-    mappedData.conversionValue = makeNumber(eventData["x-ga-mp1-tr"]);
+  else if (eventData['x-ga-mp1-ev'])
+    mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-ev']);
+  else if (eventData['x-ga-mp1-tr'])
+    mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-tr']);
   else if (valueFromItems)
     mappedData.conversionValue = makeNumber(valueFromItems);
   else mappedData.conversionValue = 1;
@@ -328,7 +328,7 @@ function addCartData(eventData, mappedData) {
     mappedData.currencyCode = eventData.currencyCode;
   else if (eventData.currency) mappedData.currencyCode = eventData.currency;
   else if (currencyFromItems) mappedData.currencyCode = currencyFromItems;
-  else mappedData.currencyCode = "USD";
+  else mappedData.currencyCode = 'USD';
 
   return mappedData;
 }
@@ -348,7 +348,7 @@ function addUserIdentifiers(eventData, mappedData) {
       let identifier = {};
 
       identifier[d.name] = hashData(d.name, d.value);
-      identifier["userIdentifierSource"] = data.userIdentifierSource;
+      identifier['userIdentifierSource'] = data.userIdentifierSource;
 
       userIdentifiers.push(identifier);
       usedIdentifiers.push(d.name);
@@ -361,10 +361,10 @@ function addUserIdentifiers(eventData, mappedData) {
   else if (eventData.email) hashedEmail = eventData.email;
   else if (eventData.email_address) hashedEmail = eventData.email_address;
 
-  if (usedIdentifiers.indexOf("hashedEmail") === -1 && hashedEmail) {
+  if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
     userIdentifiersMapped.push({
-      hashedEmail: hashData("hashedEmail", hashedEmail),
-      userIdentifierSource: "UNSPECIFIED",
+      hashedEmail: hashData('hashedEmail', hashedEmail),
+      userIdentifierSource: 'UNSPECIFIED',
     });
   }
 
@@ -380,20 +380,20 @@ function addUserIdentifiers(eventData, mappedData) {
 
   if (eventData.mobileId) mobileId = eventData.mobileId;
 
-  if (usedIdentifiers.indexOf("mobileId") === -1 && mobileId) {
+  if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
     userIdentifiersMapped.push({
-      mobileId: hashData("mobileId", mobileId),
-      userIdentifierSource: "UNSPECIFIED",
+      mobileId: hashData('mobileId', mobileId),
+      userIdentifierSource: 'UNSPECIFIED',
     });
   }
 
   if (eventData.thirdPartyUserId) thirdPartyUserId = eventData.thirdPartyUserId;
   else if (eventData.user_id) thirdPartyUserId = eventData.user_id;
 
-  if (usedIdentifiers.indexOf("thirdPartyUserId") === -1 && thirdPartyUserId) {
+  if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
     userIdentifiersMapped.push({
-      thirdPartyUserId: hashData("thirdPartyUserId", thirdPartyUserId),
-      userIdentifierSource: "UNSPECIFIED",
+      thirdPartyUserId: hashData('thirdPartyUserId', thirdPartyUserId),
+      userIdentifierSource: 'UNSPECIFIED',
     });
   }
 
@@ -413,7 +413,7 @@ function isHashed(value) {
     return false;
   }
 
-  return makeString(value).match("^[A-Fa-f0-9]{64}$") !== null;
+  return makeString(value).match('^[A-Fa-f0-9]{64}$') !== null;
 }
 
 function hashData(key, value) {
@@ -423,11 +423,11 @@ function hashData(key, value) {
 
   const type = getType(value);
 
-  if (type === "undefined" || value === "undefined") {
+  if (type === 'undefined' || value === 'undefined') {
     return undefined;
   }
 
-  if (type === "object") {
+  if (type === 'object') {
     return value.map((val) => {
       return hashData(key, val);
     });
@@ -439,29 +439,29 @@ function hashData(key, value) {
 
   value = makeString(value).trim().toLowerCase();
 
-  if (key === "hashedPhoneNumber") {
+  if (key === 'hashedPhoneNumber') {
     value = value
-      .split(" ")
-      .join("")
-      .split("-")
-      .join("")
-      .split("(")
-      .join("")
-      .split(")")
-      .join("")
-      .split("+")
-      .join("");
-  } else if (key === "hashedEmail") {
-    let valueParts = value.split("@");
+      .split(' ')
+      .join('')
+      .split('-')
+      .join('')
+      .split('(')
+      .join('')
+      .split(')')
+      .join('')
+      .split('+')
+      .join('');
+  } else if (key === 'hashedEmail') {
+    let valueParts = value.split('@');
 
-    if (valueParts[1] === "gmail.com" || valueParts[1] === "googlemail.com") {
-      value = valueParts[0].split(".").join("") + "@" + valueParts[1];
+    if (valueParts[1] === 'gmail.com' || valueParts[1] === 'googlemail.com') {
+      value = valueParts[0].split('.').join('') + '@' + valueParts[1];
     } else {
-      value = valueParts.join("@");
+      value = valueParts.join('@');
     }
   }
 
-  return sha256Sync(value, { outputEncoding: "hex" });
+  return sha256Sync(value, { outputEncoding: 'hex' });
 }
 
 function convertTimestampToISO(timestamp) {
@@ -478,7 +478,7 @@ function convertTimestampToISO(timestamp) {
     return d * hoursToMs(24);
   };
   const format = function (value) {
-    return value >= 10 ? value.toString() : "0" + value;
+    return value >= 10 ? value.toString() : '0' + value;
   };
   const fourYearsInMs = daysToMs(365 * 4 + 1);
   let year = 1970 + Math.floor(timestamp / fourYearsInMs) * 4;
@@ -519,17 +519,17 @@ function convertTimestampToISO(timestamp) {
 
   return (
     year +
-    "-" +
+    '-' +
     format(month) +
-    "-" +
+    '-' +
     format(date) +
-    " " +
+    ' ' +
     format(hours) +
-    ":" +
+    ':' +
     format(minutes) +
-    ":" +
+    ':' +
     format(sec) +
-    "+00:00"
+    '+00:00'
   );
 }
 
@@ -544,18 +544,18 @@ function determinateIsLoggingEnabled() {
     return isDebug;
   }
 
-  if (data.logType === "no") {
+  if (data.logType === 'no') {
     return false;
   }
 
-  if (data.logType === "debug") {
+  if (data.logType === 'debug') {
     return isDebug;
   }
 
-  return data.logType === "always";
+  return data.logType === 'always';
 }
 
 function enc(data) {
-  data = data || "";
+  data = data || '';
   return encodeUriComponent(data);
 }
