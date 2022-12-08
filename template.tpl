@@ -89,17 +89,6 @@ ___TEMPLATE_PARAMETERS___
       },
       {
         "type": "TEXT",
-        "name": "opCustomerId",
-        "displayName": "Operating Customer Id",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "type": "POSITIVE_NUMBER"
-          }
-        ]
-      },
-      {
-        "type": "TEXT",
         "name": "customerId",
         "displayName": "Customer Id",
         "simpleValueType": true,
@@ -107,6 +96,18 @@ ___TEMPLATE_PARAMETERS___
           {
             "type": "NON_EMPTY"
           },
+          {
+            "type": "POSITIVE_NUMBER"
+          }
+        ],
+        "help": "https://developers.google.com/google-ads/api/docs/concepts/call-structure#cid"
+      },
+      {
+        "type": "TEXT",
+        "name": "opCustomerId",
+        "displayName": "Operating Customer Id",
+        "simpleValueType": true,
+        "valueValidators": [
           {
             "type": "POSITIVE_NUMBER"
           }
@@ -621,7 +622,7 @@ function getData() {
 
         data.customDataList.forEach((d) => {
             customVariables.push({
-                'conversionCustomVariable': 'customers/'+data.opCustomerId+'/conversionCustomVariables/'+d.conversionCustomVariable,
+                'conversionCustomVariable': 'customers/'+data.customerId+'/conversionCustomVariables/'+d.conversionCustomVariable,
                 'value': d.value
             });
         });
@@ -765,7 +766,7 @@ function addUserIdentifiers(eventData, mappedData) {
         });
     }
 
-    if (eventData.phone) hashedPhoneNumber = eventData.phone;
+    /*if (eventData.phone) hashedPhoneNumber = eventData.phone;
     else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
 
     if (usedIdentifiers.indexOf('hashedPhoneNumber') === -1 && hashedPhoneNumber) {
@@ -773,7 +774,7 @@ function addUserIdentifiers(eventData, mappedData) {
             'hashedPhoneNumber': hashData('hashedPhoneNumber', hashedPhoneNumber),
             'userIdentifierSource': 'UNSPECIFIED'
         });
-    }
+    }*/
 
     if (eventData.mobileId) mobileId = eventData.mobileId;
 
@@ -852,85 +853,72 @@ function hashData(key, value) {
 }
 
 function convertTimestampToISO(timestamp) {
-    const leapYear = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    const nonLeapYear = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    const daysSinceEpoch = Math.floor(timestamp / (1000 * 60 * 60 * 24));
-    let hoursSinceYesterday = Math.floor(
-        (timestamp - daysSinceEpoch * (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    let minutesSinceYesterday = Math.floor(
-        (timestamp -
-            daysSinceEpoch * (1000 * 60 * 60 * 24) -
-            hoursSinceYesterday * (1000 * 60 * 60)) /
-        (1000 * 60)
-    );
-    let secondsSinceYesterday = Math.floor(
-        (timestamp -
-            daysSinceEpoch * (1000 * 60 * 60 * 24) -
-            hoursSinceYesterday * (1000 * 60 * 60) -
-            minutesSinceYesterday * 1000 * 60) /
-        1000
-    );
+  const secToMs = function (s) {
+    return s * 1000;
+  };
+  const minToMs = function (m) {
+    return m * secToMs(60);
+  };
+  const hoursToMs = function (h) {
+    return h * minToMs(60);
+  };
+  const daysToMs = function (d) {
+    return d * hoursToMs(24);
+  };
+  const format = function (value) {
+    return value >= 10 ? value.toString() : '0' + value;
+  };
+  const fourYearsInMs = daysToMs(365 * 4 + 1);
+  let year = 1970 + Math.floor(timestamp / fourYearsInMs) * 4;
+  timestamp = timestamp % fourYearsInMs;
 
-    let startYear = 1970;
-    let startMonth = 1;
-    let dayCounter = 0;
-    const approxYears = daysSinceEpoch / 365;
-
-    while (dayCounter < daysSinceEpoch && startYear - 1969 < approxYears) {
-        if (startYear % 4 === 0) {
-            dayCounter = dayCounter + 366;
-        } else {
-            dayCounter = dayCounter + 365;
-        }
-        startYear++;
+  while (true) {
+    let isLeapYear = !(year % 4);
+    let nextTimestamp = timestamp - daysToMs(isLeapYear ? 366 : 365);
+    if (nextTimestamp < 0) {
+      break;
     }
+    timestamp = nextTimestamp;
+    year = year + 1;
+  }
 
-    let remainingDays = daysSinceEpoch + 1 - dayCounter;
-    const calcYear = startYear % 4 !== 0 ? nonLeapYear : leapYear;
+  const daysByMonth =
+    year % 4 === 0
+      ? [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+      : [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-    let monthdayCounter = calcYear[0];
-    while (monthdayCounter < remainingDays) {
-        startMonth++;
-        if (monthdayCounter + calcYear[startMonth - 1] > remainingDays) {
-            break;
-        }
-        monthdayCounter = monthdayCounter + calcYear[startMonth - 1];
+  let month = 0;
+  for (let i = 0; i < daysByMonth.length; i++) {
+    let msInThisMonth = daysToMs(daysByMonth[i]);
+    if (timestamp > msInThisMonth) {
+      timestamp = timestamp - msInThisMonth;
+    } else {
+      month = i + 1;
+      break;
     }
+  }
+  let date = Math.ceil(timestamp / daysToMs(1));
+  timestamp = timestamp - daysToMs(date - 1);
+  let hours = Math.floor(timestamp / hoursToMs(1));
+  timestamp = timestamp - hoursToMs(hours);
+  let minutes = Math.floor(timestamp / minToMs(1));
+  timestamp = timestamp - minToMs(minutes);
+  let sec = Math.floor(timestamp / secToMs(1));
 
-    remainingDays =
-        startMonth !== 1 ? remainingDays - monthdayCounter : remainingDays;
-
-    let startDate = remainingDays;
-
-    startMonth = startMonth < 10 ? '0' + startMonth : startMonth;
-    startDate = startDate < 10 ? '0' + startDate : startDate;
-    startDate = startDate === '00' ? '01' : startDate;
-    hoursSinceYesterday =
-        hoursSinceYesterday < 10 ? '0' + hoursSinceYesterday : hoursSinceYesterday;
-    minutesSinceYesterday =
-        minutesSinceYesterday < 10
-            ? '0' + minutesSinceYesterday
-            : minutesSinceYesterday;
-    secondsSinceYesterday =
-        secondsSinceYesterday < 10
-            ? '0' + secondsSinceYesterday
-            : secondsSinceYesterday;
-
-    return (
-        startYear +
-        '-' +
-        startMonth +
-        '-' +
-        startDate +
-        ' ' +
-        hoursSinceYesterday +
-        ':' +
-        minutesSinceYesterday +
-        ':' +
-        secondsSinceYesterday +
-        '+00:00'
-    );
+  return (
+    year +
+    '-' +
+    format(month) +
+    '-' +
+    format(date) +
+    ' ' +
+    format(hours) +
+    ':' +
+    format(minutes) +
+    ':' +
+    format(sec) +
+    '+00:00'
+  );
 }
 
 function determinateIsLoggingEnabled() {
