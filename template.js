@@ -154,7 +154,7 @@ function updateAccessToken(refreshToken) {
 function getUrl() {
   if (data.developerTokenOwn) {
     return (
-      'https://googleads.googleapis.com/v11/customers/' +
+      'https://googleads.googleapis.com/v12/customers/' +
       enc(data.opCustomerId) +
       ':uploadClickConversions'
     );
@@ -194,7 +194,7 @@ function getData() {
       customVariables.push({
         conversionCustomVariable:
           'customers/' +
-          data.customerId +
+          data.opCustomerId +
           '/conversionCustomVariables/' +
           d.conversionCustomVariable,
         value: d.value,
@@ -212,23 +212,27 @@ function getData() {
     conversions: [mappedData],
     partialFailure: true,
     validateOnly: false,
+    debugEnabled: data.debugEnabled || false,
   };
 }
 
 function addConversionAttribution(eventData, mappedData) {
-  if (data.gbraid) mappedData.gbraid = data.gbraid;
-  else if (eventData.gbraid) mappedData.gbraid = data.gbraid;
+  const braid = data.gbraid || eventData.gbraid;
+  const wbraid = data.wbraid || eventData.wbraid;
+  const gclid = data.gclid || eventData.gclid;
 
-  if (data.wbraid) mappedData.wbraid = data.wbraid;
-  else if (eventData.wbraid) mappedData.wbraid = data.wbraid;
-
-  if (data.gclid) mappedData.gclid = data.gclid;
-  else if (eventData.gclid) mappedData.gclid = data.gclid;
+  if (gclid) {
+    mappedData.gclid = gclid;
+  } else if (braid) {
+    mappedData.braid = braid;
+  } else if (wbraid) {
+    mappedData.wbraid = wbraid;
+  }
 
   if (data.conversionDateTime)
     mappedData.conversionDateTime = data.conversionDateTime;
   else if (eventData.conversionDateTime)
-    mappedData.conversionDateTime = data.conversionDateTime;
+    mappedData.conversionDateTime = eventData.conversionDateTime;
   else mappedData.conversionDateTime = getConversionDateTime();
 
   return mappedData;
@@ -337,7 +341,6 @@ function addUserIdentifiers(eventData, mappedData) {
   let hashedEmail;
   let hashedPhoneNumber;
   let mobileId;
-  let thirdPartyUserId;
   let userIdentifiersMapped;
   let usedIdentifiers = [];
 
@@ -348,7 +351,7 @@ function addUserIdentifiers(eventData, mappedData) {
       let identifier = {};
 
       identifier[d.name] = hashData(d.name, d.value);
-      identifier['userIdentifierSource'] = data.userIdentifierSource;
+      identifier['userIdentifierSource'] = d.userIdentifierSource;
 
       userIdentifiers.push(identifier);
       usedIdentifiers.push(d.name);
@@ -368,31 +371,24 @@ function addUserIdentifiers(eventData, mappedData) {
     });
   }
 
-  /*if (eventData.phone) hashedPhoneNumber = eventData.phone;
-    else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
+  if (eventData.phone) hashedPhoneNumber = eventData.phone;
+  else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
 
-    if (usedIdentifiers.indexOf('hashedPhoneNumber') === -1 && hashedPhoneNumber) {
-        userIdentifiersMapped.push({
-            'hashedPhoneNumber': hashData('hashedPhoneNumber', hashedPhoneNumber),
-            'userIdentifierSource': 'UNSPECIFIED'
-        });
-    }*/
+  if (
+    usedIdentifiers.indexOf('hashedPhoneNumber') === -1 &&
+    hashedPhoneNumber
+  ) {
+    userIdentifiersMapped.push({
+      hashedPhoneNumber: hashData('hashedPhoneNumber', hashedPhoneNumber),
+      userIdentifierSource: 'UNSPECIFIED',
+    });
+  }
 
   if (eventData.mobileId) mobileId = eventData.mobileId;
 
   if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
     userIdentifiersMapped.push({
       mobileId: hashData('mobileId', mobileId),
-      userIdentifierSource: 'UNSPECIFIED',
-    });
-  }
-
-  if (eventData.thirdPartyUserId) thirdPartyUserId = eventData.thirdPartyUserId;
-  else if (eventData.user_id) thirdPartyUserId = eventData.user_id;
-
-  if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
-    userIdentifiersMapped.push({
-      thirdPartyUserId: hashData('thirdPartyUserId', thirdPartyUserId),
       userIdentifierSource: 'UNSPECIFIED',
     });
   }
@@ -448,8 +444,6 @@ function hashData(key, value) {
       .split('(')
       .join('')
       .split(')')
-      .join('')
-      .split('+')
       .join('');
   } else if (key === 'hashedEmail') {
     let valueParts = value.split('@');
