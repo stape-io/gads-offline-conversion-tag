@@ -516,7 +516,7 @@ function sendConversionRequest(accessToken, refreshToken) {
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
-        Name: 'gAdsOfflineConversion',
+        Name: 'GAdsOfflineConversion',
         Type: 'Request',
         TraceId: traceId,
         EventName: makeString(data.conversionActionId),
@@ -533,7 +533,7 @@ function sendConversionRequest(accessToken, refreshToken) {
       if (isLoggingEnabled) {
         logToConsole(
           JSON.stringify({
-            Name: 'gAdsOfflineConversion',
+            Name: 'GAdsOfflineConversion',
             Type: 'Response',
             TraceId: traceId,
             EventName: makeString(data.conversionActionId),
@@ -585,7 +585,7 @@ function updateAccessToken(refreshToken) {
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
-        Name: 'gAdsOfflineConversion',
+        Name: 'GAdsOfflineConversion',
         Type: 'Request',
         TraceId: traceId,
         EventName: 'Auth',
@@ -601,7 +601,7 @@ function updateAccessToken(refreshToken) {
       if (isLoggingEnabled) {
         logToConsole(
           JSON.stringify({
-            Name: 'gAdsOfflineConversion',
+            Name: 'GAdsOfflineConversion',
             Type: 'Response',
             TraceId: traceId,
             EventName: 'Auth',
