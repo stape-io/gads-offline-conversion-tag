@@ -164,13 +164,16 @@ function getUrl() {
   const containerZone = containerKey[0];
   const containerIdentifier = containerKey[1];
   const containerApiKey = containerKey[2];
+  const containerDefaultDomainEnd = containerKey[3] || 'io';
 
   return (
     'https://' +
     enc(containerIdentifier) +
     '.' +
     enc(containerZone) +
-    '.stape.io/stape-api/' +
+    '.stape.' +
+    enc(containerDefaultDomainEnd) +
+    '/stape-api/' +
     enc(containerApiKey) +
     '/v1/gads/auth-proxy'
   );
