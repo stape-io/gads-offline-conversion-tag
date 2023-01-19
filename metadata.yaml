@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 3d945bfd6b6de7c35b03653980d3ee3819c24ad4
+    changeNotes: Fix log name
   - sha: 5debae98e8db131491d9d7233255657a5156fa03
     changeNotes: Add new EU zones support.
   - sha: e4909621e2d1247094c9a1f499d489e9dccf9bb2
