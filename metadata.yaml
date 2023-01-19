@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 752cce52b9881879d86432f98984b6b23176f011
+    changeNotes: Fix permissions
   - sha: 3d945bfd6b6de7c35b03653980d3ee3819c24ad4
     changeNotes: Fix log name
   - sha: 5debae98e8db131491d9d7233255657a5156fa03
