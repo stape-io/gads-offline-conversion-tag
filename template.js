@@ -153,8 +153,10 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
   if (data.developerTokenOwn) {
+    const apiVersion = '14';
+
     return (
-      'https://googleads.googleapis.com/v12/customers/' +
+      'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
       enc(data.opCustomerId) +
       ':uploadClickConversions'
     );
@@ -344,8 +346,16 @@ function addUserIdentifiers(eventData, mappedData) {
   let hashedEmail;
   let hashedPhoneNumber;
   let mobileId;
+  let thirdPartyUserId;
+  let addressInfo;
   let userIdentifiersMapped;
+  let userEventData = {};
   let usedIdentifiers = [];
+
+
+  if (getType(eventData.user_data) === 'object') {
+    userEventData = eventData.user_data || eventData.user_properties || eventData.user;
+  }
 
   if (data.userDataList) {
     let userIdentifiers = [];
@@ -366,6 +376,8 @@ function addUserIdentifiers(eventData, mappedData) {
   if (eventData.hashedEmail) hashedEmail = eventData.hashedEmail;
   else if (eventData.email) hashedEmail = eventData.email;
   else if (eventData.email_address) hashedEmail = eventData.email_address;
+  else if (userEventData.email) hashedEmail = userEventData.email;
+  else if (userEventData.email_address) hashedEmail = userEventData.email_address;
 
   if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
     userIdentifiersMapped.push({
@@ -376,6 +388,8 @@ function addUserIdentifiers(eventData, mappedData) {
 
   if (eventData.phone) hashedPhoneNumber = eventData.phone;
   else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
+  else if (userEventData.phone) hashedPhoneNumber = userEventData.phone;
+  else if (userEventData.phone_number) hashedPhoneNumber = userEventData.phone_number;
 
   if (
     usedIdentifiers.indexOf('hashedPhoneNumber') === -1 &&
@@ -391,7 +405,25 @@ function addUserIdentifiers(eventData, mappedData) {
 
   if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
     userIdentifiersMapped.push({
-      mobileId: hashData('mobileId', mobileId),
+      mobileId: mobileId,
+      userIdentifierSource: 'UNSPECIFIED',
+    });
+  }
+
+  if (eventData.thirdPartyUserId) thirdPartyUserId = eventData.thirdPartyUserId;
+
+  if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
+    userIdentifiersMapped.push({
+      thirdPartyUserId: thirdPartyUserId,
+      userIdentifierSource: 'UNSPECIFIED',
+    });
+  }
+
+  if (eventData.addressInfo) addressInfo = eventData.addressInfo;
+
+  if (usedIdentifiers.indexOf('addressInfo') === -1 && addressInfo) {
+    userIdentifiersMapped.push({
+      addressInfo: addressInfo,
       userIdentifierSource: 'UNSPECIFIED',
     });
   }

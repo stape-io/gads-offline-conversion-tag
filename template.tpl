@@ -52,7 +52,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "debugEnabled",
     "checkboxText": "Debug enabled",
     "simpleValueType": true,
-    "help": "If true, the API will perform all upload checks and return errors if any are found. \u003cbr /\u003e\nIf false, it will perform only basic input validation, skip subsequent upload checks, and return success even if no click was found for the provided userIdentifiers. \u003cbr /\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v12/customers/uploadClickConversions?hl\u003den#request-body\"\u003eRead more\u003c/a\u003e"
+    "help": "If true, the API will perform all upload checks and return errors if any are found. \u003cbr /\u003e\nIf false, it will perform only basic input validation, skip subsequent upload checks, and return success even if no click was found for the provided userIdentifiers. \u003cbr /\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v14/customers/uploadClickConversions?hl\u003den#request-body\"\u003eRead more\u003c/a\u003e"
   },
   {
     "type": "GROUP",
@@ -280,6 +280,11 @@ ___TEMPLATE_PARAMETERS___
     "groupStyle": "ZIPPY_CLOSED",
     "subParams": [
       {
+        "type": "LABEL",
+        "name": "cartDataLabel",
+        "displayName": "More info about the Cart Data can be found \u003ca href\u003d\"https://developers.google.com/google-ads/api/docs/conversions/upload-clicks#include_cart_data_in_conversions\" target\u003d\"_blank\"\u003eby this link\u003c/a\u003e."
+      },
+      {
         "type": "TEXT",
         "name": "orderId",
         "displayName": "Order ID",
@@ -305,21 +310,21 @@ ___TEMPLATE_PARAMETERS___
         "name": "merchantId",
         "displayName": "Merchant ID",
         "simpleValueType": true,
-        "help": "The Merchant Center ID where the items are uploaded."
+        "help": "The ID of the associated \u003ca href\u003d\"https://support.google.com/google-ads/answer/188493\" target\u003d\"_blank\"\u003eMerchant Center\u003c/a\u003e account."
       },
       {
         "type": "TEXT",
         "name": "feedCountryCode",
         "displayName": "Feed Country Code",
         "simpleValueType": true,
-        "help": "The country code associated with the feed where the items are uploaded."
+        "help": "The ISO 3166 two-character region code of the Merchant Center feed."
       },
       {
         "type": "TEXT",
         "name": "feedLanguageCode",
         "displayName": "Feed Language Code",
         "simpleValueType": true,
-        "help": "The language code associated with the feed where the items are uploaded."
+        "help": "The ISO 639-1 language code of the Merchant Center feed."
       },
       {
         "type": "TEXT",
@@ -369,6 +374,14 @@ ___TEMPLATE_PARAMETERS___
               {
                 "value": "mobileId",
                 "displayValue": "Mobile device ID (advertising ID/IDFA)"
+              },
+              {
+                "value": "thirdPartyUserId",
+                "displayValue": "Third Party User ID"
+              },
+              {
+                "value": "addressInfo",
+                "displayValue": "Address Info"
               }
             ]
           },
@@ -416,8 +429,7 @@ ___TEMPLATE_PARAMETERS___
         "type": "SIMPLE_TABLE",
         "newRowButtonText": "Add property"
       }
-    ],
-    "help": "See \u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v11/UserIdentifier#UserIdentifierSource\" target\u003d\"_blank\"\u003ethis documentation\u003c/a\u003e for more details on what user data parameters you can add to the call. If the documentation requires the parameter to be hashed, you \u003cstrong\u003emust\u003c/strong\u003e hash it with SHA256, or the tag will do this automatically before sending the event to gAds."
+    ]
   },
   {
     "displayName": "Firebase Settings",
@@ -634,8 +646,10 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
   if (data.developerTokenOwn) {
+    const apiVersion = '14';
+
     return (
-      'https://googleads.googleapis.com/v12/customers/' +
+      'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
       enc(data.opCustomerId) +
       ':uploadClickConversions'
     );
@@ -825,8 +839,16 @@ function addUserIdentifiers(eventData, mappedData) {
   let hashedEmail;
   let hashedPhoneNumber;
   let mobileId;
+  let thirdPartyUserId;
+  let addressInfo;
   let userIdentifiersMapped;
+  let userEventData = {};
   let usedIdentifiers = [];
+
+
+  if (getType(eventData.user_data) === 'object') {
+    userEventData = eventData.user_data || eventData.user_properties || eventData.user;
+  }
 
   if (data.userDataList) {
     let userIdentifiers = [];
@@ -847,6 +869,8 @@ function addUserIdentifiers(eventData, mappedData) {
   if (eventData.hashedEmail) hashedEmail = eventData.hashedEmail;
   else if (eventData.email) hashedEmail = eventData.email;
   else if (eventData.email_address) hashedEmail = eventData.email_address;
+  else if (userEventData.email) hashedEmail = userEventData.email;
+  else if (userEventData.email_address) hashedEmail = userEventData.email_address;
 
   if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
     userIdentifiersMapped.push({
@@ -857,6 +881,8 @@ function addUserIdentifiers(eventData, mappedData) {
 
   if (eventData.phone) hashedPhoneNumber = eventData.phone;
   else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
+  else if (userEventData.phone) hashedPhoneNumber = userEventData.phone;
+  else if (userEventData.phone_number) hashedPhoneNumber = userEventData.phone_number;
 
   if (
     usedIdentifiers.indexOf('hashedPhoneNumber') === -1 &&
@@ -872,7 +898,25 @@ function addUserIdentifiers(eventData, mappedData) {
 
   if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
     userIdentifiersMapped.push({
-      mobileId: hashData('mobileId', mobileId),
+      mobileId: mobileId,
+      userIdentifierSource: 'UNSPECIFIED',
+    });
+  }
+
+  if (eventData.thirdPartyUserId) thirdPartyUserId = eventData.thirdPartyUserId;
+
+  if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
+    userIdentifiersMapped.push({
+      thirdPartyUserId: thirdPartyUserId,
+      userIdentifierSource: 'UNSPECIFIED',
+    });
+  }
+
+  if (eventData.addressInfo) addressInfo = eventData.addressInfo;
+
+  if (usedIdentifiers.indexOf('addressInfo') === -1 && addressInfo) {
+    userIdentifiersMapped.push({
+      addressInfo: addressInfo,
       userIdentifierSource: 'UNSPECIFIED',
     });
   }
