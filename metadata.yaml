@@ -1,9 +1,11 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 0f9e4c832e0fdac18455a648c51adc1b6d75bb53
+    changeNotes: Update API version.
   - sha: 752cce52b9881879d86432f98984b6b23176f011
-    changeNotes: Fix permissions
+    changeNotes: Fix permissions.
   - sha: 3d945bfd6b6de7c35b03653980d3ee3819c24ad4
-    changeNotes: Fix log name
+    changeNotes: Fix log name.
   - sha: 5debae98e8db131491d9d7233255657a5156fa03
     changeNotes: Add new EU zones support.
   - sha: e4909621e2d1247094c9a1f499d489e9dccf9bb2
