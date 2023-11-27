@@ -16,3 +16,5 @@ versions:
     changeNotes: Add Operating Customer.
   - sha: 7644a65be1d6fe8a6c4a5fe843d1d7784cb01991
     changeNotes: Initial release.
+  - sha: 7e2db0139861393ca76913f12c665a8cca5f7321
+    changeNotes: Update API version, add consent fields.
