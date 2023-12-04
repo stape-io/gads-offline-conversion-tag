@@ -506,6 +506,7 @@ const getTimestampMillis = require('getTimestampMillis');
 const getType = require('getType');
 const sha256Sync = require('sha256Sync');
 const Math = require('Math');
+const Object = require('Object');
 
 const isLoggingEnabled = determinateIsLoggingEnabled();
 const traceId = getRequestHeader('trace-id');
@@ -951,10 +952,17 @@ function hashData(key, value) {
     return undefined;
   }
 
-  if (type === 'object') {
+  if (type === 'array') {
     return value.map((val) => {
       return hashData(key, val);
     });
+  }
+
+  if(type === 'object') {
+    return Object.keys(value).reduce((acc, val) => {
+      acc[val] = hashData(key, value[val]);
+      return acc;
+    }, {});
   }
 
   if (isHashed(value)) {
