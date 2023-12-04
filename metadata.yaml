@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 896519ddfb566753a546dcc7fe4d105155b4ee21
+    changeNotes: Added array type support for hashData.
   - sha: 0f9e4c832e0fdac18455a648c51adc1b6d75bb53
     changeNotes: Update API version.
   - sha: 752cce52b9881879d86432f98984b6b23176f011
