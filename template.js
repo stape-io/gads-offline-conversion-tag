@@ -212,7 +212,7 @@ function getData() {
   mappedData = addConversionAttribution(eventData, mappedData);
   mappedData = addCartData(eventData, mappedData);
   mappedData = addUserIdentifiers(eventData, mappedData);
-  mappedData = addConsentData(eventData, mappedData);
+  mappedData = addConsentData(mappedData);
 
   return {
     conversions: [mappedData],
@@ -244,9 +244,9 @@ function addConversionAttribution(eventData, mappedData) {
   return mappedData;
 }
 
-function addConsentData(eventData, mappedData) {
-  const adUserData = data.adUserData || eventData.adUserData;
-  const adPersonalization = data.adPersonalization || eventData.adPersonalization;
+function addConsentData(mappedData) {
+  const adUserData = data.adUserData;
+  const adPersonalization = data.adPersonalization;
   if (adUserData && adPersonalization) {
     mappedData.consent = {};
 
