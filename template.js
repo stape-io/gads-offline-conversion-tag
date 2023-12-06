@@ -154,7 +154,7 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
   if (data.developerTokenOwn) {
-    const apiVersion = '14';
+    const apiVersion = '15';
 
     return (
       'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
@@ -213,6 +213,7 @@ function getData() {
   mappedData = addConversionAttribution(eventData, mappedData);
   mappedData = addCartData(eventData, mappedData);
   mappedData = addUserIdentifiers(eventData, mappedData);
+  mappedData = addConsentData(mappedData);
 
   return {
     conversions: [mappedData],
@@ -244,6 +245,23 @@ function addConversionAttribution(eventData, mappedData) {
   return mappedData;
 }
 
+function addConsentData(mappedData) {
+  const adUserData = data.adUserData;
+  const adPersonalization = data.adPersonalization;
+  if (adUserData && adPersonalization) {
+    mappedData.consent = {};
+
+    if (adUserData) {
+      mappedData.consent.adUserData = adUserData;
+    }
+
+    if (adPersonalization) {
+      mappedData.consent.adPersonalization = adPersonalization;
+    }
+  }
+
+  return mappedData;
+}
 function addCartData(eventData, mappedData) {
   let currencyFromItems = '';
   let valueFromItems = 0;

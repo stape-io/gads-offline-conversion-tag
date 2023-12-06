@@ -207,6 +207,70 @@ ___TEMPLATE_PARAMETERS___
         "defaultValue": "UNSPECIFIED"
       },
       {
+        "type": "SELECT",
+        "name": "adUserData",
+        "displayName": "Consent for ad UserData",
+        "macrosInSelect": true,
+        "selectItems": [
+          {
+            "value": "UNSPECIFIED",
+            "displayValue": "UNSPECIFIED"
+          },
+          {
+            "value": "UNKNOWN",
+            "displayValue": "UNKNOWN"
+          },
+          {
+            "value": "GRANTED",
+            "displayValue": "GRANTED"
+          },
+          {
+            "value": "DENIED",
+            "displayValue": "DENIED"
+          }
+        ],
+        "simpleValueType": true,
+        "help": "This represents consent for ad user data.",
+        "valueValidators": [
+          {
+            "type": "NON_EMPTY"
+          }
+        ],
+        "defaultValue": "UNSPECIFIED"
+      },
+      {
+        "type": "SELECT",
+        "name": "adPersonalization",
+        "displayName": "Consent for ad personalization",
+        "macrosInSelect": true,
+        "selectItems": [
+          {
+            "value": "UNSPECIFIED",
+            "displayValue": "UNSPECIFIED"
+          },
+          {
+            "value": "UNKNOWN",
+            "displayValue": "UNKNOWN"
+          },
+          {
+            "value": "GRANTED",
+            "displayValue": "GRANTED"
+          },
+          {
+            "value": "DENIED",
+            "displayValue": "DENIED"
+          }
+        ],
+        "simpleValueType": true,
+        "help": "This represents consent for ad personalization. This can only be set for OfflineUserDataJobService and UserDataService.",
+        "valueValidators": [
+          {
+            "type": "NON_EMPTY"
+          }
+        ],
+        "defaultValue": "UNSPECIFIED"
+      },
+      {
         "type": "TEXT",
         "name": "conversionDateTime",
         "displayName": "Conversion DateTime",
@@ -647,7 +711,7 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
   if (data.developerTokenOwn) {
-    const apiVersion = '14';
+    const apiVersion = '15';
 
     return (
       'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
@@ -706,6 +770,7 @@ function getData() {
   mappedData = addConversionAttribution(eventData, mappedData);
   mappedData = addCartData(eventData, mappedData);
   mappedData = addUserIdentifiers(eventData, mappedData);
+  mappedData = addConsentData(mappedData);
 
   return {
     conversions: [mappedData],
@@ -737,6 +802,23 @@ function addConversionAttribution(eventData, mappedData) {
   return mappedData;
 }
 
+function addConsentData(mappedData) {
+  const adUserData = data.adUserData;
+  const adPersonalization = data.adPersonalization;
+  if (adUserData && adPersonalization) {
+    mappedData.consent = {};
+
+    if (adUserData) {
+      mappedData.consent.adUserData = adUserData;
+    }
+
+    if (adPersonalization) {
+      mappedData.consent.adPersonalization = adPersonalization;
+    }
+  }
+
+  return mappedData;
+}
 function addCartData(eventData, mappedData) {
   let currencyFromItems = '';
   let valueFromItems = 0;
