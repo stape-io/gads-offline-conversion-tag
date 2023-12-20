@@ -24,7 +24,8 @@ If you use stape, **add your Stape Container API Key**. You can find it in the s
 
 **Gclid** - The Google click ID (gclid) is associated with this conversion.
 
-
+### Useful links:
+- https://stape.io/blog/google-ads-offline-conversion-using-server-gtm
 ## Open Source
 
 Google Ads Offline Conversion Tag for GTM Server Side is developing and maintained by [Stape Team](https://stape.io/) under the Apache 2.0 license.
