@@ -242,6 +242,14 @@ function addConversionAttribution(eventData, mappedData) {
     mappedData.conversionDateTime = eventData.conversionDateTime;
   else mappedData.conversionDateTime = getConversionDateTime();
 
+  if(data.externalAttributionModel || data.externalAttributionCredit) {
+    mappedData.external_attribution_data = {};
+    if(data.externalAttributionCredit)
+      mappedData.external_attribution_data.external_attribution_credit = makeNumber(data.externalAttributionCredit);
+    if(data.externalAttributionModel)
+      mappedData.external_attribution_data.external_attribution_model = data.externalAttributionModel;
+  }
+
   return mappedData;
 }
 

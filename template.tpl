@@ -297,6 +297,28 @@ ___TEMPLATE_PARAMETERS___
         "displayName": "gclid",
         "simpleValueType": true,
         "help": "The Google click ID (gclid) associated with this conversion."
+      },
+      {
+        "type": "TEXT",
+        "name": "externalAttributionCredit",
+        "displayName": "External Attribution Credit",
+        "simpleValueType": true,
+        "valueValidators": [
+          {
+            "type": "REGEX",
+            "args": [
+              "-?\\d+(\\.\\d+)?"
+            ],
+            "errorMessage": "The value must be double"
+          }
+        ]
+      },
+      {
+        "type": "TEXT",
+        "name": "externalAttributionModel",
+        "displayName": "External Attribution Model",
+        "simpleValueType": true,
+        "valueValidators": []
       }
     ]
   },
@@ -798,6 +820,14 @@ function addConversionAttribution(eventData, mappedData) {
   else if (eventData.conversionDateTime)
     mappedData.conversionDateTime = eventData.conversionDateTime;
   else mappedData.conversionDateTime = getConversionDateTime();
+
+  if(data.externalAttributionModel || data.externalAttributionCredit) {
+    mappedData.external_attribution_data = {};
+    if(data.externalAttributionCredit)
+      mappedData.external_attribution_data.external_attribution_credit = makeNumber(data.externalAttributionCredit);
+    if(data.externalAttributionModel)
+      mappedData.external_attribution_data.external_attribution_model = data.externalAttributionModel;
+  }
 
   return mappedData;
 }
