@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 6955b64a199a667d6af5112fd2d4f1e6b4d15b90
+    changeNotes: Added support for external_attribution_data.
   - sha: 896519ddfb566753a546dcc7fe4d105155b4ee21
     changeNotes: Added array type support for hashData.
   - sha: 0f9e4c832e0fdac18455a648c51adc1b6d75bb53
