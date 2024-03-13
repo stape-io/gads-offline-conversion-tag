@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 6be12bc9a7dfd5d6a3a6a8865fe3131a2e348d98
+    changeNotes: Fix falsy customer identifiers.
   - sha: 6955b64a199a667d6af5112fd2d4f1e6b4d15b90
     changeNotes: Added support for external_attribution_data.
   - sha: 896519ddfb566753a546dcc7fe4d105155b4ee21

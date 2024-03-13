@@ -954,7 +954,7 @@ function addUserIdentifiers(eventData, mappedData) {
   let mobileId;
   let thirdPartyUserId;
   let addressInfo;
-  let userIdentifiersMapped;
+  let userIdentifiersMapped = [];
   let userEventData = {};
   let usedIdentifiers = [];
 
@@ -967,13 +967,16 @@ function addUserIdentifiers(eventData, mappedData) {
     let userIdentifiers = [];
 
     data.userDataList.forEach((d) => {
-      let identifier = {};
+      const valueType = getType(d.value);
+      const isValidValue = ['undefined', 'null'].indexOf(valueType) === -1 && d.value !== '';
+      if(isValidValue) {
+        let identifier = {};
+        identifier[d.name] = hashData(d.name, d.value);
+        identifier['userIdentifierSource'] = d.userIdentifierSource;
 
-      identifier[d.name] = hashData(d.name, d.value);
-      identifier['userIdentifierSource'] = d.userIdentifierSource;
-
-      userIdentifiers.push(identifier);
-      usedIdentifiers.push(d.name);
+        userIdentifiers.push(identifier);
+        usedIdentifiers.push(d.name);
+      }
     });
 
     userIdentifiersMapped = userIdentifiers;
@@ -1034,7 +1037,7 @@ function addUserIdentifiers(eventData, mappedData) {
     });
   }
 
-  if (userIdentifiersMapped) {
+  if (userIdentifiersMapped.length) {
     mappedData.userIdentifiers = userIdentifiersMapped;
   }
 
