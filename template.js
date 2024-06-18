@@ -154,7 +154,7 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
   if (data.developerTokenOwn) {
-    const apiVersion = '15';
+    const apiVersion = '17';
 
     return (
       'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
@@ -224,14 +224,14 @@ function getData() {
 }
 
 function addConversionAttribution(eventData, mappedData) {
-  const braid = data.gbraid || eventData.gbraid;
+  const gbraid = data.gbraid || eventData.gbraid;
   const wbraid = data.wbraid || eventData.wbraid;
   const gclid = data.gclid || eventData.gclid;
 
   if (gclid) {
     mappedData.gclid = gclid;
-  } else if (braid) {
-    mappedData.braid = braid;
+  } else if (gbraid) {
+    mappedData.gbraid = gbraid;
   } else if (wbraid) {
     mappedData.wbraid = wbraid;
   }
