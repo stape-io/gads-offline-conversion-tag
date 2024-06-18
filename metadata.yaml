@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 45855bae28b8962d582d39911e1805fc980b5d79
+    changeNotes: Googleads API v17, fix gbraid typo.
   - sha: 6be12bc9a7dfd5d6a3a6a8865fe3131a2e348d98
     changeNotes: Fix falsy customer identifiers.
   - sha: 6955b64a199a667d6af5112fd2d4f1e6b4d15b90
