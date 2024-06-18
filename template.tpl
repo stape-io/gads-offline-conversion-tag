@@ -733,7 +733,7 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
   if (data.developerTokenOwn) {
-    const apiVersion = '15';
+    const apiVersion = '16';
 
     return (
       'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
