@@ -52,7 +52,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "debugEnabled",
     "checkboxText": "Debug enabled",
     "simpleValueType": true,
-    "help": "If true, the API will perform all upload checks and return errors if any are found. \u003cbr /\u003e\nIf false, it will perform only basic input validation, skip subsequent upload checks, and return success even if no click was found for the provided userIdentifiers. \u003cbr /\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v14/customers/uploadClickConversions?hl\u003den#request-body\"\u003eRead more\u003c/a\u003e"
+    "help": "If true, the API will perform all upload checks and return errors if any are found. \u003cbr /\u003e\nIf false, it will perform only basic input validation, skip subsequent upload checks, and return success even if no click was found for the provided userIdentifiers. \u003cbr /\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v17/customers/uploadClickConversions?hl\u003den#request-body\"\u003eRead more\u003c/a\u003e"
   },
   {
     "type": "GROUP",
@@ -424,7 +424,7 @@ ___TEMPLATE_PARAMETERS___
         "name": "items",
         "displayName": "Items",
         "simpleValueType": true,
-        "help": "Data of the items purchased. \u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v11/customers/uploadClickConversions#Item\" target\u003d\"_blank\"\u003eMore info\u003c/a\u003e."
+        "help": "Data of the items purchased. \u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v17/customers/uploadClickConversions#Item\" target\u003d\"_blank\"\u003eMore info\u003c/a\u003e."
       }
     ]
   },
@@ -733,7 +733,7 @@ function updateAccessToken(refreshToken) {
 
 function getUrl() {
   if (data.developerTokenOwn) {
-    const apiVersion = '15';
+    const apiVersion = '17';
 
     return (
       'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
@@ -803,14 +803,14 @@ function getData() {
 }
 
 function addConversionAttribution(eventData, mappedData) {
-  const braid = data.gbraid || eventData.gbraid;
+  const gbraid = data.gbraid || eventData.gbraid;
   const wbraid = data.wbraid || eventData.wbraid;
   const gclid = data.gclid || eventData.gclid;
 
   if (gclid) {
     mappedData.gclid = gclid;
-  } else if (braid) {
-    mappedData.braid = braid;
+  } else if (gbraid) {
+    mappedData.gbraid = gbraid;
   } else if (wbraid) {
     mappedData.wbraid = wbraid;
   }
