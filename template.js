@@ -4,7 +4,6 @@ const getContainerVersion = require('getContainerVersion');
 const logToConsole = require('logToConsole');
 const getRequestHeader = require('getRequestHeader');
 const encodeUriComponent = require('encodeUriComponent');
-const Firestore = require('Firestore');
 const getAllEventData = require('getAllEventData');
 const makeString = require('makeString');
 const makeNumber = require('makeNumber');
@@ -14,25 +13,25 @@ const getType = require('getType');
 const sha256Sync = require('sha256Sync');
 const Math = require('Math');
 const Object = require('Object');
+const getGoogleAuth = require('getGoogleAuth');
 
 const isLoggingEnabled = determinateIsLoggingEnabled();
 const traceId = getRequestHeader('trace-id');
 
 const postBody = getData();
+const postUrl = getUrl();
+let auth;
 
-let firebaseOptions = {};
-if (data.firebaseProjectId) firebaseOptions.projectId = data.firebaseProjectId;
+if (data.authFlow === 'stape') {
+  return sendConversionRequestApi();
+} else {
+  auth = getGoogleAuth({
+    scopes: ['https://www.googleapis.com/auth/adwords']
+  });
+  return sendConversionRequest();
+}
 
-Firestore.read(data.firebasePath, firebaseOptions).then(
-  (result) => {
-    return sendConversionRequest(result.data.access_token, data.refreshToken);
-  },
-  () => updateAccessToken(data.refreshToken)
-);
-
-function sendConversionRequest(accessToken, refreshToken) {
-  const postUrl = getUrl();
-
+function sendConversionRequestApi() {
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
@@ -62,100 +61,66 @@ function sendConversionRequest(accessToken, refreshToken) {
             ResponseBody: body,
           })
         );
-      }
-
+      };
       if (statusCode >= 200 && statusCode < 400) {
         data.gtmOnSuccess();
-      } else if (statusCode === 401) {
-        updateAccessToken(refreshToken);
       } else {
         data.gtmOnFailure();
       }
     },
-    { headers: getConversionRequestHeaders(accessToken), method: 'POST' },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'login-customer-id': data.customerId,
+      }, method: 'POST'
+    },
     JSON.stringify(postBody)
   );
 }
 
-function getConversionRequestHeaders(accessToken) {
-  let headers = {
-    'Content-Type': 'application/json',
-    Authorization: 'Bearer ' + accessToken,
-    'login-customer-id': data.customerId,
-  };
-
-  if (data.developerTokenOwn) {
-    headers['developer-token'] = data.developerToken;
-  }
-
-  return headers;
-}
-
-function updateAccessToken(refreshToken) {
-  const authUrl = 'https://www.googleapis.com/oauth2/v3/token';
-  const authBody =
-    'refresh_token=' +
-    enc(refreshToken || data.refreshToken) +
-    '&client_id=' +
-    enc(data.clientId) +
-    '&client_secret=' +
-    enc(data.clientSecret) +
-    '&grant_type=refresh_token';
-
+function sendConversionRequest() {
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
         Name: 'GAdsOfflineConversion',
         Type: 'Request',
         TraceId: traceId,
-        EventName: 'Auth',
+        EventName: makeString(data.conversionActionId),
         RequestMethod: 'POST',
-        RequestUrl: authUrl,
+        RequestUrl: postUrl,
+        RequestBody: postBody,
       })
     );
   }
 
   sendHttpRequest(
-    authUrl,
-    (statusCode, headers, body) => {
-      if (isLoggingEnabled) {
-        logToConsole(
-          JSON.stringify({
-            Name: 'GAdsOfflineConversion',
-            Type: 'Response',
-            TraceId: traceId,
-            EventName: 'Auth',
-            ResponseStatusCode: statusCode,
-            ResponseHeaders: headers,
-          })
-        );
-      }
-
-      if (statusCode >= 200 && statusCode < 400) {
-        let bodyParsed = JSON.parse(body);
-
-        Firestore.write(data.firebasePath, bodyParsed, firebaseOptions).then(
-          () => {
-            sendConversionRequest(bodyParsed.access_token, data.refreshToken);
-          },
-          data.gtmOnFailure
-        );
-      } else {
-        data.gtmOnFailure();
-      }
-    },
-    {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      method: 'POST',
-    },
-    authBody
-  );
+    postUrl, { headers: {'Content-Type': 'application/json', 'login-customer-id': data.customerId, 'developer-token': data.developerToken}, method: 'POST', authorization: auth}, JSON.stringify(postBody)
+  ).then((statusCode, headers, body) => {
+    if (isLoggingEnabled) {
+      logToConsole(
+        JSON.stringify({
+          Name: 'GAdsOfflineConversion',
+          Type: 'Response',
+          TraceId: traceId,
+          EventName: makeString(data.conversionActionId),
+          ResponseStatusCode: statusCode,
+          ResponseHeaders: headers,
+          ResponseBody: body,
+        })
+      );
+    };
+      
+    if (statusCode >= 200 && statusCode < 400) {
+      data.gtmOnSuccess();
+    } else {
+      data.gtmOnFailure();
+    }
+  });
 }
 
 function getUrl() {
-  if (data.developerTokenOwn) {
-    const apiVersion = '17';
-
+  if (data.authFlow === 'own') {
+    const apiVersion = '18';
     return (
       'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
       enc(data.opCustomerId) +
@@ -178,7 +143,7 @@ function getUrl() {
     enc(containerDefaultDomainEnd) +
     '/stape-api/' +
     enc(containerApiKey) +
-    '/v1/gads/auth-proxy'
+    '/v2/gads/auth-proxy'
   );
 }
 

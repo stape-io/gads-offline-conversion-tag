@@ -61,43 +61,26 @@ ___TEMPLATE_PARAMETERS___
     "groupStyle": "ZIPPY_CLOSED",
     "subParams": [
       {
-        "type": "TEXT",
-        "name": "clientId",
-        "displayName": "Client ID",
-        "simpleValueType": true,
-        "valueValidators": [
+        "type": "RADIO",
+        "name": "authFlow",
+        "displayName": "Type",
+        "radioItems": [
           {
-            "type": "NON_EMPTY"
+            "value": "stape",
+            "displayValue": "Stape Google Connection",
+            "help": "You can enable it on Stape container settings, in section \u003ca href\u003d\"https://app.stape.io/container/\" target\u003d\"_blank\"\u003eConnections\u003c/a\u003e\n\u003c/br\u003e\u003c/br\u003e\n\u003ca href\u003d\"https://stape.io/blog/google-ads-offline-conversion-using-server-gtm\" target\u003d\"_blank\"\u003eLearn more in Stape article.\u003c/a\u003e"
+      },
+      {
+            "value": "own",
+            "displayValue": "Own Google Credentials"
           }
         ],
-        "help": "More info on how to get Authentication credentials \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/google-ads/api/rest/auth\"\u003ecan be found by this link\u003c/a\u003e."
-      },
-      {
-        "type": "TEXT",
-        "name": "clientSecret",
-        "displayName": "Client Secret",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "type": "NON_EMPTY"
-          }
-        ]
-      },
-      {
-        "type": "TEXT",
-        "name": "refreshToken",
-        "displayName": "API Refresh Token",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "type": "NON_EMPTY"
-          }
-        ]
+        "simpleValueType": true
       },
       {
         "type": "TEXT",
         "name": "customerId",
-        "displayName": "Customer Id",
+        "displayName": "Customer ID",
         "simpleValueType": true,
         "valueValidators": [
           {
@@ -107,27 +90,21 @@ ___TEMPLATE_PARAMETERS___
             "type": "POSITIVE_NUMBER"
           }
         ],
-        "help": "https://developers.google.com/google-ads/api/docs/concepts/call-structure#cid"
+        "help": "Customer ID -  \u003cb\u003eGoogle Ads account ID\u003c/b\u003e used for authorization (without hyphens).\n\u003c/br\u003e\u003c/br\u003e\nCan be the same as Operating Customer ID \u003c/br\u003e\n\u003ca href\u003d\"https://stape.io/blog/google-ads-offline-conversion-using-server-gtm\"\u003eLearn more in Stape article.\u003c/a\u003e\u003c/br\u003e\u003c/br\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/docs/concepts/call-structure#cid\" target\u003d\"_blank\"\u003eGoogle documentation\u003c/a\u003e",
+        "valueHint": "1234567890"
       },
       {
         "type": "TEXT",
         "name": "opCustomerId",
-        "displayName": "Operating Customer Id",
+        "displayName": "Operating Customer ID",
         "simpleValueType": true,
         "valueValidators": [
           {
             "type": "POSITIVE_NUMBER"
           }
         ],
-        "help": "https://developers.google.com/google-ads/api/docs/concepts/call-structure#cid"
-      },
-      {
-        "type": "CHECKBOX",
-        "name": "developerTokenOwn",
-        "checkboxText": "Use own developer token",
-        "simpleValueType": true,
-        "defaultValue": false,
-        "help": "The process of obtaining Google Ads API Developer token is pretty complicated. If you use Stape hosting, your requests will be signed with Stape\u0027s Developer Token. If you use other hosting or you have your own Developer Token, you can override it.\n\u003cbr\u003e\u003cbr\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/docs/first-call/dev-token\" target\u003d\"_blank\"\u003eMore info about developer tokens.\u003c/a\u003e"
+        "help": "Operating Customer ID  - \u003cb\u003eGoogle Ads account ID\u003c/b\u003e that will receive conversions (without hyphens).\n\u003c/br\u003e\u003c/br\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/docs/concepts/call-structure#cid\" target\u003d\"_blank\"\u003eGoogle documentation\u003c/a\u003e",
+        "valueHint": "1234567890"
       },
       {
         "type": "TEXT",
@@ -141,11 +118,12 @@ ___TEMPLATE_PARAMETERS___
         ],
         "enablingConditions": [
           {
-            "paramName": "developerTokenOwn",
-            "paramValue": true,
+            "paramName": "authFlow",
+            "paramValue": "own",
             "type": "EQUALS"
           }
-        ]
+        ],
+        "help": "The process of obtaining Google Ads API Developer token is pretty complicated. If you use Stape hosting, your requests will be signed with Stape\u0027s Developer Token. If you use other hosting or you have your own Developer Token, you can override it. \u003cbr\u003e\u003cbr\u003e \u003ca href\u003d\"https://developers.google.com/google-ads/api/docs/first-call/dev-token\" target\u003d\"_blank\"\u003eMore info about developer tokens.\u003c/a\u003e"
       },
       {
         "type": "TEXT",
@@ -161,6 +139,11 @@ ___TEMPLATE_PARAMETERS___
           {
             "paramName": "developerTokenOwn",
             "paramValue": false,
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "authFlow",
+            "paramValue": "stape",
             "type": "EQUALS"
           }
         ],
@@ -518,33 +501,6 @@ ___TEMPLATE_PARAMETERS___
     ]
   },
   {
-    "displayName": "Firebase Settings",
-    "name": "firebaseGroup",
-    "groupStyle": "ZIPPY_CLOSED",
-    "type": "GROUP",
-    "subParams": [
-      {
-        "type": "TEXT",
-        "name": "firebaseProjectId",
-        "displayName": "Firebase Project ID",
-        "simpleValueType": true
-      },
-      {
-        "type": "TEXT",
-        "name": "firebasePath",
-        "displayName": "Firebase Path",
-        "simpleValueType": true,
-        "help": "The tag uses Firebase to store the OAuth access token. You can choose any key for a document that will store the OAuth access token.",
-        "valueValidators": [
-          {
-            "type": "NON_EMPTY"
-          }
-        ],
-        "defaultValue": "stape/gads-offline-auth"
-      }
-    ]
-  },
-  {
     "displayName": "Logs Settings",
     "name": "logsGroup",
     "groupStyle": "ZIPPY_CLOSED",
@@ -583,7 +539,6 @@ const getContainerVersion = require('getContainerVersion');
 const logToConsole = require('logToConsole');
 const getRequestHeader = require('getRequestHeader');
 const encodeUriComponent = require('encodeUriComponent');
-const Firestore = require('Firestore');
 const getAllEventData = require('getAllEventData');
 const makeString = require('makeString');
 const makeNumber = require('makeNumber');
@@ -593,25 +548,25 @@ const getType = require('getType');
 const sha256Sync = require('sha256Sync');
 const Math = require('Math');
 const Object = require('Object');
+const getGoogleAuth = require('getGoogleAuth');
 
 const isLoggingEnabled = determinateIsLoggingEnabled();
 const traceId = getRequestHeader('trace-id');
 
 const postBody = getData();
+const postUrl = getUrl();
+let auth;
 
-let firebaseOptions = {};
-if (data.firebaseProjectId) firebaseOptions.projectId = data.firebaseProjectId;
+if (data.authFlow === 'stape') {
+  return sendConversionRequestApi();
+} else {
+  auth = getGoogleAuth({
+    scopes: ['https://www.googleapis.com/auth/adwords']
+  });
+  return sendConversionRequest();
+}
 
-Firestore.read(data.firebasePath, firebaseOptions).then(
-  (result) => {
-    return sendConversionRequest(result.data.access_token, data.refreshToken);
-  },
-  () => updateAccessToken(data.refreshToken)
-);
-
-function sendConversionRequest(accessToken, refreshToken) {
-  const postUrl = getUrl();
-
+function sendConversionRequestApi() {
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
@@ -641,100 +596,66 @@ function sendConversionRequest(accessToken, refreshToken) {
             ResponseBody: body,
           })
         );
-      }
-
+      };
       if (statusCode >= 200 && statusCode < 400) {
         data.gtmOnSuccess();
-      } else if (statusCode === 401) {
-        updateAccessToken(refreshToken);
       } else {
         data.gtmOnFailure();
       }
     },
-    { headers: getConversionRequestHeaders(accessToken), method: 'POST' },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'login-customer-id': data.customerId,
+      }, method: 'POST'
+    },
     JSON.stringify(postBody)
   );
 }
 
-function getConversionRequestHeaders(accessToken) {
-  let headers = {
-    'Content-Type': 'application/json',
-    Authorization: 'Bearer ' + accessToken,
-    'login-customer-id': data.customerId,
-  };
-
-  if (data.developerTokenOwn) {
-    headers['developer-token'] = data.developerToken;
-  }
-
-  return headers;
-}
-
-function updateAccessToken(refreshToken) {
-  const authUrl = 'https://www.googleapis.com/oauth2/v3/token';
-  const authBody =
-    'refresh_token=' +
-    enc(refreshToken || data.refreshToken) +
-    '&client_id=' +
-    enc(data.clientId) +
-    '&client_secret=' +
-    enc(data.clientSecret) +
-    '&grant_type=refresh_token';
-
+function sendConversionRequest() {
   if (isLoggingEnabled) {
     logToConsole(
       JSON.stringify({
         Name: 'GAdsOfflineConversion',
         Type: 'Request',
         TraceId: traceId,
-        EventName: 'Auth',
+        EventName: makeString(data.conversionActionId),
         RequestMethod: 'POST',
-        RequestUrl: authUrl,
+        RequestUrl: postUrl,
+        RequestBody: postBody,
       })
     );
   }
 
   sendHttpRequest(
-    authUrl,
-    (statusCode, headers, body) => {
+    postUrl, { headers: {'Content-Type': 'application/json', 'login-customer-id': data.customerId, 'developer-token': data.developerToken}, method: 'POST', authorization: auth}, JSON.stringify(postBody)
+  ).then((statusCode, headers, body) => {
       if (isLoggingEnabled) {
         logToConsole(
           JSON.stringify({
             Name: 'GAdsOfflineConversion',
             Type: 'Response',
             TraceId: traceId,
-            EventName: 'Auth',
+          EventName: makeString(data.conversionActionId),
             ResponseStatusCode: statusCode,
             ResponseHeaders: headers,
+          ResponseBody: body,
           })
         );
-      }
+    };
 
       if (statusCode >= 200 && statusCode < 400) {
-        let bodyParsed = JSON.parse(body);
-
-        Firestore.write(data.firebasePath, bodyParsed, firebaseOptions).then(
-          () => {
-            sendConversionRequest(bodyParsed.access_token, data.refreshToken);
-          },
-          data.gtmOnFailure
-        );
+      data.gtmOnSuccess();
       } else {
         data.gtmOnFailure();
       }
-    },
-    {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      method: 'POST',
-    },
-    authBody
-  );
+  });
 }
 
 function getUrl() {
-  if (data.developerTokenOwn) {
-    const apiVersion = '17';
-
+  if (data.authFlow === 'own') {
+    const apiVersion = '18';
     return (
       'https://googleads.googleapis.com/v' + apiVersion + '/customers/' +
       enc(data.opCustomerId) +
@@ -757,7 +678,7 @@ function getUrl() {
     enc(containerDefaultDomainEnd) +
     '/stape-api/' +
     enc(containerApiKey) +
-    '/v1/gads/auth-proxy'
+    '/v2/gads/auth-proxy'
   );
 }
 
@@ -1353,47 +1274,15 @@ ___SERVER_PERMISSIONS___
   {
     "instance": {
       "key": {
-        "publicId": "access_firestore",
+        "publicId": "read_event_data",
         "versionId": "1"
       },
       "param": [
         {
-          "key": "allowedOptions",
+          "key": "eventDataAccess",
           "value": {
-            "type": 2,
-            "listItem": [
-              {
-                "type": 3,
-                "mapKey": [
-                  {
                     "type": 1,
-                    "string": "projectId"
-                  },
-                  {
-                    "type": 1,
-                    "string": "path"
-                  },
-                  {
-                    "type": 1,
-                    "string": "operation"
-                  }
-                ],
-                "mapValue": [
-                  {
-                    "type": 1,
-                    "string": "*"
-                  },
-                  {
-                    "type": 1,
-                    "string": "*"
-                  },
-                  {
-                    "type": 1,
-                    "string": "read_write"
-                  }
-                ]
-              }
-            ]
+            "string": "any"
           }
         }
       ]
@@ -1406,15 +1295,20 @@ ___SERVER_PERMISSIONS___
   {
     "instance": {
       "key": {
-        "publicId": "read_event_data",
+        "publicId": "use_google_credentials",
         "versionId": "1"
       },
       "param": [
         {
-          "key": "eventDataAccess",
+          "key": "allowedScopes",
           "value": {
+            "type": 2,
+            "listItem": [
+              {
             "type": 1,
-            "string": "any"
+                "string": "https://www.googleapis.com/auth/adwords"
+              }
+            ]
           }
         }
       ]
