@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 4b06ca7c121f2908d84292a837b5704e1a61b42c
+    changeNotes: Updated Stape API version, changed Google Auth, Googleads API v18.
   - sha: 45855bae28b8962d582d39911e1805fc980b5d79
     changeNotes: Googleads API v17, fix gbraid typo.
   - sha: 6be12bc9a7dfd5d6a3a6a8865fe3131a2e348d98
