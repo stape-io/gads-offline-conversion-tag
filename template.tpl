@@ -124,30 +124,6 @@ ___TEMPLATE_PARAMETERS___
           }
         ],
         "help": "The process of obtaining Google Ads API Developer token is pretty complicated. If you use Stape hosting, your requests will be signed with Stape\u0027s Developer Token. If you use other hosting or you have your own Developer Token, you can override it. \u003cbr\u003e\u003cbr\u003e \u003ca href\u003d\"https://developers.google.com/google-ads/api/docs/first-call/dev-token\" target\u003d\"_blank\"\u003eMore info about developer tokens.\u003c/a\u003e"
-      },
-      {
-        "type": "TEXT",
-        "name": "containerKey",
-        "displayName": "Stape Container API Key",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "type": "NON_EMPTY"
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "developerTokenOwn",
-            "paramValue": false,
-            "type": "EQUALS"
-          },
-          {
-            "paramName": "authFlow",
-            "paramValue": "stape",
-            "type": "EQUALS"
-          }
-        ],
-        "help": "It can be found in the detailed view of the container inside your \u003ca href\u003d\"https://app.stape.io/container/\" target\u003d\"_blank\"\u003eStape account\u003c/a\u003e."
       }
     ]
   },
@@ -663,19 +639,14 @@ function getUrl() {
     );
   }
 
-  const containerKey = data.containerKey.split(':');
-  const containerZone = containerKey[0];
-  const containerIdentifier = containerKey[1];
-  const containerApiKey = containerKey[2];
-  const containerDefaultDomainEnd = containerKey[3] || 'io';
-
+  const containerIdentifier = getRequestHeader('x-gtm-identifier');
+  const defaultDomain = getRequestHeader('x-gtm-default-domain');
+  const containerApiKey = getRequestHeader('x-gtm-api-key');
   return (
     'https://' +
     enc(containerIdentifier) +
     '.' +
-    enc(containerZone) +
-    '.stape.' +
-    enc(containerDefaultDomainEnd) +
+    enc(defaultDomain) +
     '/stape-api/' +
     enc(containerApiKey) +
     '/v2/gads/auth-proxy'
@@ -1230,6 +1201,51 @@ ___SERVER_PERMISSIONS___
                   {
                     "type": 1,
                     "string": "trace-id"
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "headerName"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "x-gtm-identifier"
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "headerName"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "x-gtm-default-domain"
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "headerName"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "x-gtm-api-key"
                   }
                 ]
               }
