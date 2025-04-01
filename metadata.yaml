@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 34799009706e10a03d3472f261ddb4f9b80aa6df
+    changeNotes: Add support for BigQuery logging.
   - sha: 30d585a9569d27a77ddfbee8a2a2b67c97d105e7
     changeNotes: Getting Stape API key from headers.
   - sha: 4b06ca7c121f2908d84292a837b5704e1a61b42c
