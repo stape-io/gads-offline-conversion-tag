@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: a78abfb3425976dc308b8b7edfe4c83d816120c5
+    changeNotes: Bump API version to v20.
   - sha: cf9fcf0250cbc622bd7029f41905c9570ad3e205
     changeNotes: Shortened some comments.
   - sha: 34799009706e10a03d3472f261ddb4f9b80aa6df
