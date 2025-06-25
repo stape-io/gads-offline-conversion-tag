@@ -1,5 +1,8 @@
 homepage: "https://stape.io/"
+documentation: "https://github.com/stape-io/gads-offline-conversion-tag"
 versions:
+  - sha: ed6b4c3a1655223a68086bcf3b08010205e7de56
+    changeNotes: Remove some comments. Improve tests.
   - sha: a78abfb3425976dc308b8b7edfe4c83d816120c5
     changeNotes: Bump API version to v20.
   - sha: cf9fcf0250cbc622bd7029f41905c9570ad3e205
