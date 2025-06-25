@@ -597,7 +597,6 @@ function log(rawDataToLog) {
   if (determinateIsLoggingEnabledForBigQuery())
     logDestinationsHandlers.bigQuery = logToBigQuery;
 
-  // Key mappings for each log destination
   const keyMappings = {
     // No transformation for Console is needed.
     bigQuery: {
@@ -620,10 +619,10 @@ function log(rawDataToLog) {
 
     const mapping = keyMappings[logDestination];
     const dataToLog = mapping ? {} : rawDataToLog;
-    // Map keys based on the log destination
+
     if (mapping) {
       for (const key in rawDataToLog) {
-        const mappedKey = mapping[key] || key; // Fallback to original key if no mapping exists
+        const mappedKey = mapping[key] || key;
         dataToLog[mappedKey] = rawDataToLog[key];
       }
     }
@@ -643,18 +642,12 @@ function logToBigQuery(dataToLog) {
     tableId: data.logBigQueryTableId
   };
 
-  // timestamp is required.
   dataToLog.timestamp = getTimestampMillis();
 
-  // Columns with type JSON need to be stringified.
   ['request_body', 'response_headers', 'response_body'].forEach((p) => {
-    // GTM Sandboxed JSON.parse returns undefined for malformed JSON but throws post-execution, causing execution failure.
-    // If fixed, could use: dataToLog[p] = JSON.stringify(JSON.parse(dataToLog[p]) || dataToLog[p]);
     dataToLog[p] = JSON.stringify(dataToLog[p]);
   });
 
-  // assertApi doesn't work for 'BigQuery.insert()'. It's needed to convert BigQuery into a function when testing.
-  // Ref: https://gtm-gear.com/posts/gtm-templates-testing/
   const bigquery =
     getType(BigQuery) === 'function'
       ? BigQuery() /* Only during Unit Tests */
