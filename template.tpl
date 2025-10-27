@@ -615,7 +615,7 @@ const BigQuery = require('BigQuery');
 /**********************************************************************************************/
 
 const traceId = getRequestHeader('trace-id');
-
+const apiVersion = '22';
 const eventData = getAllEventData();
 
 if (!isConsentGivenOrNotRequired()) {
@@ -677,7 +677,7 @@ function sendConversionRequestApi() {
       headers: {
         'Content-Type': 'application/json',
         'login-customer-id': data.customerId,
-        'x-gads-api-version': '22'
+        'x-gads-api-version': apiVersion
       },
       method: 'POST'
     },
@@ -730,7 +730,6 @@ function sendConversionRequest() {
 
 function getUrl() {
   if (data.authFlow === 'own') {
-    const apiVersion = '22';
     return (
       'https://googleads.googleapis.com/v' +
       apiVersion +
