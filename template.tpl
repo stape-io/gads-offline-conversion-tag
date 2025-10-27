@@ -12,7 +12,6 @@ ___INFO___
   "type": "TAG",
   "id": "cvt_temp_public_id",
   "version": 1,
-  "securityGroups": [],
   "displayName": "Google Ads Offline Conversion",
   "categories": [
     "ANALYTICS",
@@ -26,7 +25,8 @@ ___INFO___
   "description": "Tag that sends conversion event data to Google Ads Offline Conversion.",
   "containerContexts": [
     "SERVER"
-  ]
+  ],
+  "securityGroups": []
 }
 
 
@@ -736,7 +736,7 @@ function sendConversionRequest() {
 
 function getUrl() {
   if (data.authFlow === 'own') {
-    const apiVersion = '20';
+    const apiVersion = '22';
     return (
       'https://googleads.googleapis.com/v' +
       apiVersion +
@@ -1675,4 +1675,5 @@ setup: |-
 ___NOTES___
 
 Created on 03/03/2022, 20:20:20
+
 
