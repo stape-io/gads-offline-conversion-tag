@@ -1,7 +1,7 @@
 homepage: "https://stape.io/"
 documentation: "https://github.com/stape-io/gads-offline-conversion-tag"
 versions:
-  - sha: db49b04d538755da9c50b916416647372ecfce25
+  - sha: 46f6c820677422c2a7f9c29c9bbcc4aa9586b0ca
     changeNotes: Added API version request header to Stape Auth Flow
   - sha: 917164406abe6911e28e5349c0917bc2d3b5616b
     changeNotes: Bump API version to v22.
