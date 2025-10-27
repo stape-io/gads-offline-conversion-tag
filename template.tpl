@@ -48,13 +48,6 @@ ___TEMPLATE_PARAMETERS___
     ]
   },
   {
-    "type": "CHECKBOX",
-    "name": "debugEnabled",
-    "checkboxText": "Debug enabled",
-    "simpleValueType": true,
-    "help": "If true, the API will perform all upload checks and return errors if any are found. \u003cbr /\u003e\nIf false, it will perform only basic input validation, skip subsequent upload checks, and return success even if no click was found for the provided userIdentifiers. \u003cbr /\u003e\n\u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v17/customers/uploadClickConversions?hl\u003den#request-body\"\u003eRead more\u003c/a\u003e"
-  },
-  {
     "type": "GROUP",
     "name": "authGroup",
     "displayName": "Authentication Credentials",
@@ -683,7 +676,8 @@ function sendConversionRequestApi() {
     {
       headers: {
         'Content-Type': 'application/json',
-        'login-customer-id': data.customerId
+        'login-customer-id': data.customerId,
+        'x-gads-api-version': '22'
       },
       method: 'POST'
     },

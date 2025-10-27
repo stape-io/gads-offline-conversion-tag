@@ -80,7 +80,8 @@ function sendConversionRequestApi() {
     {
       headers: {
         'Content-Type': 'application/json',
-        'login-customer-id': data.customerId
+        'login-customer-id': data.customerId,
+        'x-gads-api-version': '22'
       },
       method: 'POST'
     },
