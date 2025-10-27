@@ -1,6 +1,8 @@
 homepage: "https://stape.io/"
 documentation: "https://github.com/stape-io/gads-offline-conversion-tag"
 versions:
+  - sha: 4f72478bba168fa10cd1cd8cacb3ed553a14ebb5
+    changeNotes: Fixed debug_enable issue
   - sha: ed6b4c3a1655223a68086bcf3b08010205e7de56
     changeNotes: Remove some comments. Improve tests.
   - sha: a78abfb3425976dc308b8b7edfe4c83d816120c5
