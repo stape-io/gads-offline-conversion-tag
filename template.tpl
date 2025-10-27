@@ -676,7 +676,9 @@ function sendConversionRequestApi() {
     {
       headers: {
         'Content-Type': 'application/json',
-        'login-customer-id': data.customerId
+        'login-customer-id': data.customerId,
+        'x-gads-api-version': '22'
+
       },
       method: 'POST'
     },
@@ -729,7 +731,7 @@ function sendConversionRequest() {
 
 function getUrl() {
   if (data.authFlow === 'own') {
-    const apiVersion = '22';
+    const apiVersion = '20';
     return (
       'https://googleads.googleapis.com/v' +
       apiVersion +
