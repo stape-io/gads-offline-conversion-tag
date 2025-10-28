@@ -7,7 +7,7 @@
 
 ## Parameters
 
-**Conversion Action ID** - refers to the Conversion ID you want to use to track offline conversions.
+**Conversion Action ID** - refers to the Conversion Action ID you want to use to track offline conversions.
 
 **Operating Customer ID** - Google Ads account ID.
 
