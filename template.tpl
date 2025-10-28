@@ -36,7 +36,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "conversionAction",
-    "displayName": "Conversion Action Id",
+    "displayName": "Conversion Action ID",
     "simpleValueType": true,
     "valueValidators": [
       {
@@ -45,7 +45,15 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "POSITIVE_NUMBER"
       }
-    ]
+    ],
+    "help": "You can find it by going to the \u003ci\u003eGoogle Ads account \u003e Goals \u003e Conversions \u003e Summary \u003e Access the desired Conversion Action\u003c/i\u003e. After you click on the Conversion Action, the Conversion ID is on the \u003cb\u003ectId\u003c/b\u003e URL query parameter on your browser."
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "validateOnly",
+    "checkboxText": "Validate Only",
+    "simpleValueType": true,
+    "help": "If true, the request is validated but not executed. Only errors are returned, not results."
   },
   {
     "type": "GROUP",
@@ -471,14 +479,13 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "GROUP",
-    "name": "consentSettingsGroup",
-    "displayName": "Consent Settings",
+    "name": "tagExecutionConsentSettingsGroup",
+    "displayName": "Tag Execution Consent Settings",
     "groupStyle": "ZIPPY_CLOSED",
     "subParams": [
       {
         "type": "RADIO",
         "name": "adStorageConsent",
-        "displayName": "",
         "radioItems": [
           {
             "value": "optional",
@@ -486,7 +493,8 @@ ___TEMPLATE_PARAMETERS___
           },
           {
             "value": "required",
-            "displayValue": "Send data in case marketing consent given"
+            "displayValue": "Send data in case marketing consent given",
+            "help": "Aborts the tag execution if marketing consent (\u003ci\u003ead_storage\u003c/i\u003e Google Consent Mode or Stape\u0027s Data Tag parameter) is not given."
           }
         ],
         "simpleValueType": true,
@@ -612,13 +620,13 @@ const Object = require('Object');
 const getGoogleAuth = require('getGoogleAuth');
 const BigQuery = require('BigQuery');
 
-/**********************************************************************************************/
+/*==============================================================================
+==============================================================================*/
 
-const traceId = getRequestHeader('trace-id');
 const apiVersion = '22';
 const eventData = getAllEventData();
 
-if (!isConsentGivenOrNotRequired()) {
+if (!isConsentGivenOrNotRequired(data, eventData)) {
   return data.gtmOnSuccess();
 }
 
@@ -629,25 +637,21 @@ if (url && url.lastIndexOf('https://gtm-msr.appspot.com/', 0) === 0) {
 
 const postBody = getData();
 const postUrl = getUrl();
-let auth;
 
 if (data.authFlow === 'stape') {
   return sendConversionRequestApi();
 } else {
-  auth = getGoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/adwords']
-  });
   return sendConversionRequest();
 }
 
-/**********************************************************************************************/
-// Vendor related functions
+/*==============================================================================
+  Vendor related functions
+==============================================================================*/
 
 function sendConversionRequestApi() {
   log({
     Name: 'GAdsOfflineConversion',
     Type: 'Request',
-    TraceId: traceId,
     EventName: makeString(data.conversionAction),
     RequestMethod: 'POST',
     RequestUrl: postUrl,
@@ -660,7 +664,6 @@ function sendConversionRequestApi() {
       log({
         Name: 'GAdsOfflineConversion',
         Type: 'Response',
-        TraceId: traceId,
         EventName: makeString(data.conversionAction),
         ResponseStatusCode: statusCode,
         ResponseHeaders: headers,
@@ -689,11 +692,14 @@ function sendConversionRequest() {
   log({
     Name: 'GAdsOfflineConversion',
     Type: 'Request',
-    TraceId: traceId,
     EventName: makeString(data.conversionAction),
     RequestMethod: 'POST',
     RequestUrl: postUrl,
     RequestBody: postBody
+  });
+
+  const auth = getGoogleAuth({
+    scopes: ['https://www.googleapis.com/auth/adwords']
   });
 
   sendHttpRequest(
@@ -713,7 +719,6 @@ function sendConversionRequest() {
     log({
       Name: 'GAdsOfflineConversion',
       Type: 'Response',
-      TraceId: traceId,
       EventName: makeString(data.conversionAction),
       ResponseStatusCode: result.statusCode,
       ResponseHeaders: result.headers,
@@ -788,7 +793,7 @@ function getData() {
   return {
     conversions: [mappedData],
     partialFailure: true,
-    validateOnly: false,
+    validateOnly: data.validateOnly || false
   };
 }
 
@@ -797,11 +802,9 @@ function addConversionAttribution(eventData, mappedData) {
   const wbraid = data.wbraid || eventData.wbraid;
   const gclid = data.gclid || eventData.gclid;
 
-  if (gclid) {
-    mappedData.gclid = gclid;
-  } else if (gbraid) {
-    mappedData.gbraid = gbraid;
-  } else if (wbraid) {
+  if (gclid) mappedData.gclid = gclid;
+  if (gbraid) mappedData.gbraid = gbraid;
+  if (!gclid && !gbraid && wbraid) {
     mappedData.wbraid = wbraid;
   }
 
@@ -841,6 +844,7 @@ function addConsentData(mappedData) {
 
   return mappedData;
 }
+
 function addCartData(eventData, mappedData) {
   let currencyFromItems = '';
   let valueFromItems = 0;
@@ -1165,8 +1169,9 @@ function convertTimestampToISO(timestamp) {
   );
 }
 
-/**********************************************************************************************/
-// Helpers
+/*==============================================================================
+  Helpers
+==============================================================================*/
 
 function isHashed(value) {
   if (!value) return false;
@@ -1178,7 +1183,7 @@ function enc(data) {
   return encodeUriComponent(data);
 }
 
-function isConsentGivenOrNotRequired() {
+function isConsentGivenOrNotRequired(data, eventData) {
   if (data.adStorageConsent !== 'required') return true;
   if (eventData.consent_state) return !!eventData.consent_state.ad_storage;
   const xGaGcs = eventData['x-ga-gcs'] || ''; // x-ga-gcs is a string like "G110"
@@ -1191,6 +1196,8 @@ function log(rawDataToLog) {
     logDestinationsHandlers.console = logConsole;
   if (determinateIsLoggingEnabledForBigQuery())
     logDestinationsHandlers.bigQuery = logToBigQuery;
+
+  rawDataToLog.TraceId = getRequestHeader('trace-id');
 
   const keyMappings = {
     // No transformation for Console is needed.
@@ -1243,11 +1250,7 @@ function logToBigQuery(dataToLog) {
     dataToLog[p] = JSON.stringify(dataToLog[p]);
   });
 
-  const bigquery =
-    getType(BigQuery) === 'function'
-      ? BigQuery() /* Only during Unit Tests */
-      : BigQuery;
-  bigquery.insert(connectionInfo, [dataToLog], { ignoreUnknownValues: true });
+  BigQuery.insert(connectionInfo, [dataToLog], { ignoreUnknownValues: true });
 }
 
 function determinateIsLoggingEnabled() {
@@ -1620,20 +1623,19 @@ scenarios:
   code: "mockData.logType = 'no';\nmockData.authFlow = 'stape';\n\nrunCode(mockData);\n\
     \  \nassertApi('logToConsole').wasNotCalled();"
 - name: Should log to BQ, if the 'Log to BigQuery' option is selected
-  code: "mockData.bigQueryLogType = 'always';\nmockData.authFlow = 'stape';\n\n//\
-    \ assertApi doesn't work for 'BigQuery.insert()'.\n// Ref: https://gtm-gear.com/posts/gtm-templates-testing/\n\
-    mock('BigQuery', () => {\n  return { \n    insert: (connectionInfo, rows, options)\
-    \ => { \n      assertThat(connectionInfo).isDefined();\n      assertThat(rows).isArray();\n\
-    \      assertThat(rows).hasLength(1);\n      requiredBqKeys.forEach(p => assertThat(rows[0][p]).isDefined());\n\
-    \      assertThat(options).isEqualTo(expectedBqOptions);\n      return Promise.create((resolve,\
-    \ reject) => {\n        resolve();\n      });\n    }\n  };\n});\n  \nrunCode(mockData);"
+  code: "mockData.bigQueryLogType = 'always';\nmockData.authFlow = 'stape';\n\nmockObject('BigQuery',\
+    \ {\n  insert: (connectionInfo, rows, options) => { \n    assertThat(connectionInfo).isDefined();\n\
+    \    assertThat(rows).isArray();\n    assertThat(rows).hasLength(1);\n    requiredBqKeys.forEach(p\
+    \ => assertThat(rows[0][p]).isDefined());\n    assertThat(options).isEqualTo(expectedBqOptions);\n\
+    \    return Promise.create((resolve, reject) => {\n      resolve();\n    });\n\
+    \  }\n});\n\nrunCode(mockData);\n\nassertApi('gtmOnSuccess').wasCalled();\nassertApi('gtmOnFailure').wasNotCalled();"
 - name: Should NOT log to BQ, if the 'Do not log to BigQuery' option is selected
   code: "mockData.bigQueryLogType = 'no';\nmockData.authFlow = 'stape';\n\n// assertApi\
     \ doesn't work for 'BigQuery.insert()'.\n// Ref: https://gtm-gear.com/posts/gtm-templates-testing/\n\
-    mock('BigQuery', () => {\n  return { \n    insert: (connectionInfo, rows, options)\
-    \ => { \n      fail('BigQuery.insert should not have been called.');\n      return\
-    \ Promise.create((resolve, reject) => {\n        resolve();\n      });\n    }\n\
-    \  };\n});\n\nrunCode(mockData);"
+    mockObject('BigQuery', {\n  insert: (connectionInfo, rows, options) => { \n  \
+    \  fail('BigQuery.insert should not have been called.');\n    return Promise.create((resolve,\
+    \ reject) => {\n      resolve();\n    });\n  }\n});\n\nrunCode(mockData);\n\n\
+    assertApi('gtmOnSuccess').wasCalled();\nassertApi('gtmOnFailure').wasNotCalled();"
 setup: |-
   const JSON = require('JSON');
   const Promise = require('Promise');
