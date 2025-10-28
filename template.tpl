@@ -789,7 +789,6 @@ function getData() {
     conversions: [mappedData],
     partialFailure: true,
     validateOnly: false,
-    debugEnabled: data.debugEnabled || false
   };
 }
 
