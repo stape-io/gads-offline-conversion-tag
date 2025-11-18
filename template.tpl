@@ -328,7 +328,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "LABEL",
         "name": "cartDataLabel",
-        "displayName": "More info about the Cart Data can be found \u003ca href\u003d\"https://developers.google.com/google-ads/api/docs/conversions/upload-clicks#include_cart_data_in_conversions\" target\u003d\"_blank\"\u003eby this link\u003c/a\u003e."
+        "displayName": "More info about the Cart Data can be found \u003ca href\u003d\"https://developers.google.com/google-ads/api/reference/rpc/v22/ConversionUploadService/UploadClickConversions?hl\u003den\u0026transport\u003drest#CartData\"\u003eby this link\u003c/a\u003e."
       },
       {
         "type": "TEXT",
@@ -384,7 +384,7 @@ ___TEMPLATE_PARAMETERS___
         "name": "items",
         "displayName": "Items",
         "simpleValueType": true,
-        "help": "Data of the items purchased. \u003ca href\u003d\"https://developers.google.com/google-ads/api/rest/reference/rest/v17/customers/uploadClickConversions#Item\" target\u003d\"_blank\"\u003eMore info\u003c/a\u003e."
+        "help": "Data of the items purchased. \u003ca href\u003d\"https://developers.google.com/google-ads/api/reference/rpc/v22/ConversionUploadService/UploadClickConversions?hl\u003den\u0026transport\u003drest#Item\"\u003eMore info\u003c/a\u003e."
       }
     ]
   },
