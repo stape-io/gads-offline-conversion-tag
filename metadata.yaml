@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/gads-offline-conversion-tag'
 versions:
+  - sha: 50776d6de5b3187cb309c90213cc4e3e0b22401d
+    changeNotes: Fixed Cart Data and Items help links.
   - sha: ae169c29e92e5bb66472cffb8cc6fb205efb6a7a
     changeNotes: Added API version request header to Stape Auth Flow. Added validateOnly field. Improved Click ID handling.
   - sha: 917164406abe6911e28e5349c0917bc2d3b5616b
