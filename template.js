@@ -1,20 +1,20 @@
-const JSON = require('JSON');
-const sendHttpRequest = require('sendHttpRequest');
-const getContainerVersion = require('getContainerVersion');
-const logToConsole = require('logToConsole');
-const getRequestHeader = require('getRequestHeader');
+const BigQuery = require('BigQuery');
 const encodeUriComponent = require('encodeUriComponent');
 const getAllEventData = require('getAllEventData');
-const makeString = require('makeString');
-const makeNumber = require('makeNumber');
-const makeInteger = require('makeInteger');
+const getContainerVersion = require('getContainerVersion');
+const getGoogleAuth = require('getGoogleAuth');
+const getRequestHeader = require('getRequestHeader');
 const getTimestampMillis = require('getTimestampMillis');
 const getType = require('getType');
-const sha256Sync = require('sha256Sync');
+const JSON = require('JSON');
+const logToConsole = require('logToConsole');
+const makeInteger = require('makeInteger');
+const makeNumber = require('makeNumber');
+const makeString = require('makeString');
 const Math = require('Math');
 const Object = require('Object');
-const getGoogleAuth = require('getGoogleAuth');
-const BigQuery = require('BigQuery');
+const sendHttpRequest = require('sendHttpRequest');
+const sha256Sync = require('sha256Sync');
 
 /*==============================================================================
 ==============================================================================*/
@@ -158,10 +158,7 @@ function getData() {
   let mappedData = {
     conversionEnvironment: data.conversionEnvironment,
     conversionAction:
-      'customers/' +
-      data.opCustomerId +
-      '/conversionActions/' +
-      data.conversionAction
+      'customers/' + data.opCustomerId + '/conversionActions/' + data.conversionAction
   };
 
   if (data.customDataList) {
@@ -204,8 +201,7 @@ function addConversionAttribution(eventData, mappedData) {
     mappedData.wbraid = wbraid;
   }
 
-  if (data.conversionDateTime)
-    mappedData.conversionDateTime = data.conversionDateTime;
+  if (data.conversionDateTime) mappedData.conversionDateTime = data.conversionDateTime;
   else if (eventData.conversionDateTime)
     mappedData.conversionDateTime = eventData.conversionDateTime;
   else mappedData.conversionDateTime = getConversionDateTime();
@@ -213,8 +209,9 @@ function addConversionAttribution(eventData, mappedData) {
   if (data.externalAttributionModel || data.externalAttributionCredit) {
     mappedData.external_attribution_data = {};
     if (data.externalAttributionCredit)
-      mappedData.external_attribution_data.external_attribution_credit =
-        makeNumber(data.externalAttributionCredit);
+      mappedData.external_attribution_data.external_attribution_credit = makeNumber(
+        data.externalAttributionCredit
+      );
     if (data.externalAttributionModel)
       mappedData.external_attribution_data.external_attribution_model =
         data.externalAttributionModel;
@@ -261,14 +258,10 @@ function addCartData(eventData, mappedData) {
 
       if (d.item_price) {
         item.unitPrice = makeNumber(d.item_price);
-        valueFromItems += item.quantity
-          ? item.quantity * item.unitPrice
-          : item.unitPrice;
+        valueFromItems += item.quantity ? item.quantity * item.unitPrice : item.unitPrice;
       } else if (d.price) {
         item.unitPrice = makeNumber(d.price);
-        valueFromItems += item.quantity
-          ? item.quantity * item.unitPrice
-          : item.unitPrice;
+        valueFromItems += item.quantity ? item.quantity * item.unitPrice : item.unitPrice;
       }
 
       items[i] = item;
@@ -287,52 +280,40 @@ function addCartData(eventData, mappedData) {
     if (items) mappedData.cartData.items = items;
 
     if (data.merchantId) mappedData.cartData.merchantId = data.merchantId;
-    else if (eventData.merchantId)
-      mappedData.cartData.merchantId = eventData.merchantId;
+    else if (eventData.merchantId) mappedData.cartData.merchantId = eventData.merchantId;
 
-    if (data.feedCountryCode)
-      mappedData.cartData.feedCountryCode = data.feedCountryCode;
+    if (data.feedCountryCode) mappedData.cartData.feedCountryCode = data.feedCountryCode;
     else if (eventData.feedCountryCode)
       mappedData.cartData.feedCountryCode = eventData.feedCountryCode;
 
-    if (data.feedLanguageCode)
-      mappedData.cartData.feedLanguageCode = data.feedLanguageCode;
+    if (data.feedLanguageCode) mappedData.cartData.feedLanguageCode = data.feedLanguageCode;
     else if (eventData.feedLanguageCode)
       mappedData.cartData.feedLanguageCode = eventData.feedLanguageCode;
 
     if (data.localTransactionCost)
-      mappedData.cartData.localTransactionCost = makeNumber(
-        data.localTransactionCost
-      );
+      mappedData.cartData.localTransactionCost = makeNumber(data.localTransactionCost);
     else if (eventData.localTransactionCost)
       mappedData.cartData.localTransactionCost = eventData.localTransactionCost;
   }
 
   if (data.orderId) mappedData.orderId = makeString(data.orderId);
-  else if (eventData.orderId)
-    mappedData.orderId = makeString(eventData.orderId);
-  else if (eventData.order_id)
-    mappedData.orderId = makeString(eventData.order_id);
-  else if (eventData.transaction_id)
-    mappedData.orderId = makeString(eventData.transaction_id);
+  else if (eventData.orderId) mappedData.orderId = makeString(eventData.orderId);
+  else if (eventData.order_id) mappedData.orderId = makeString(eventData.order_id);
+  else if (eventData.transaction_id) mappedData.orderId = makeString(eventData.transaction_id);
 
-  if (data.conversionValue)
-    mappedData.conversionValue = makeNumber(data.conversionValue);
-  else if (eventData.value)
-    mappedData.conversionValue = makeNumber(eventData.value);
+  if (data.conversionValue) mappedData.conversionValue = makeNumber(data.conversionValue);
+  else if (eventData.value) mappedData.conversionValue = makeNumber(eventData.value);
   else if (eventData.conversionValue)
     mappedData.conversionValue = makeNumber(eventData.conversionValue);
   else if (eventData['x-ga-mp1-ev'])
     mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-ev']);
   else if (eventData['x-ga-mp1-tr'])
     mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-tr']);
-  else if (valueFromItems)
-    mappedData.conversionValue = makeNumber(valueFromItems);
+  else if (valueFromItems) mappedData.conversionValue = makeNumber(valueFromItems);
   else mappedData.conversionValue = 1;
 
   if (data.currencyCode) mappedData.currencyCode = data.currencyCode;
-  else if (eventData.currencyCode)
-    mappedData.currencyCode = eventData.currencyCode;
+  else if (eventData.currencyCode) mappedData.currencyCode = eventData.currencyCode;
   else if (eventData.currency) mappedData.currencyCode = eventData.currency;
   else if (currencyFromItems) mappedData.currencyCode = currencyFromItems;
   else mappedData.currencyCode = 'USD';
@@ -351,8 +332,7 @@ function addUserIdentifiers(eventData, mappedData) {
   const usedIdentifiers = [];
 
   if (getType(eventData.user_data) === 'object') {
-    userEventData =
-      eventData.user_data || eventData.user_properties || eventData.user;
+    userEventData = eventData.user_data || eventData.user_properties || eventData.user;
   }
 
   if (data.userDataList) {
@@ -360,8 +340,7 @@ function addUserIdentifiers(eventData, mappedData) {
 
     data.userDataList.forEach((d) => {
       const valueType = getType(d.value);
-      const isValidValue =
-        ['undefined', 'null'].indexOf(valueType) === -1 && d.value !== '';
+      const isValidValue = ['undefined', 'null'].indexOf(valueType) === -1 && d.value !== '';
       if (isValidValue) {
         const identifier = {};
         identifier[d.name] = hashData(d.name, d.value);
@@ -379,8 +358,7 @@ function addUserIdentifiers(eventData, mappedData) {
   else if (eventData.email) hashedEmail = eventData.email;
   else if (eventData.email_address) hashedEmail = eventData.email_address;
   else if (userEventData.email) hashedEmail = userEventData.email;
-  else if (userEventData.email_address)
-    hashedEmail = userEventData.email_address;
+  else if (userEventData.email_address) hashedEmail = userEventData.email_address;
 
   if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
     userIdentifiersMapped.push({
@@ -392,13 +370,9 @@ function addUserIdentifiers(eventData, mappedData) {
   if (eventData.phone) hashedPhoneNumber = eventData.phone;
   else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
   else if (userEventData.phone) hashedPhoneNumber = userEventData.phone;
-  else if (userEventData.phone_number)
-    hashedPhoneNumber = userEventData.phone_number;
+  else if (userEventData.phone_number) hashedPhoneNumber = userEventData.phone_number;
 
-  if (
-    usedIdentifiers.indexOf('hashedPhoneNumber') === -1 &&
-    hashedPhoneNumber
-  ) {
+  if (usedIdentifiers.indexOf('hashedPhoneNumber') === -1 && hashedPhoneNumber) {
     userIdentifiersMapped.push({
       hashedPhoneNumber: hashData('hashedPhoneNumber', hashedPhoneNumber),
       userIdentifierSource: 'UNSPECIFIED'
@@ -474,15 +448,7 @@ function hashData(key, value) {
   value = makeString(value).trim().toLowerCase();
 
   if (key === 'hashedPhoneNumber') {
-    value = value
-      .split(' ')
-      .join('')
-      .split('-')
-      .join('')
-      .split('(')
-      .join('')
-      .split(')')
-      .join('');
+    value = value.split(' ').join('').split('-').join('').split('(').join('').split(')').join('');
   } else if (key === 'hashedEmail') {
     const valueParts = value.split('@');
 
@@ -575,8 +541,8 @@ function isHashed(value) {
 }
 
 function enc(data) {
-  data = data || '';
-  return encodeUriComponent(data);
+  if (['null', 'undefined'].indexOf(getType(data)) !== -1) data = '';
+  return encodeUriComponent(makeString(data));
 }
 
 function isConsentGivenOrNotRequired(data, eventData) {
@@ -588,10 +554,8 @@ function isConsentGivenOrNotRequired(data, eventData) {
 
 function log(rawDataToLog) {
   const logDestinationsHandlers = {};
-  if (determinateIsLoggingEnabled())
-    logDestinationsHandlers.console = logConsole;
-  if (determinateIsLoggingEnabledForBigQuery())
-    logDestinationsHandlers.bigQuery = logToBigQuery;
+  if (determinateIsLoggingEnabled()) logDestinationsHandlers.console = logConsole;
+  if (determinateIsLoggingEnabledForBigQuery()) logDestinationsHandlers.bigQuery = logToBigQuery;
 
   rawDataToLog.TraceId = getRequestHeader('trace-id');
 
