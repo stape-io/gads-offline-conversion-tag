@@ -31,3 +31,6 @@ If you use Stape, **add your Stape Container API Key**. You can find it in the s
 ## Open Source
 
 The **Google Ads Offline Conversion Tag for GTM Server Side** is developed and maintained by [Stape Team](https://stape.io/) under the Apache 2.0 license.
+
+### GTM Gallery Status
+🟢 [Listed](https://tagmanager.google.com/gallery/#/owners/stape-io/templates/gads-offline-conversion-tag)
