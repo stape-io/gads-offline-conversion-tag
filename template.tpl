@@ -135,6 +135,14 @@ ___TEMPLATE_PARAMETERS___
     "groupStyle": "ZIPPY_CLOSED",
     "subParams": [
       {
+        "type": "CHECKBOX",
+        "name": "autoMapConversionInformation",
+        "checkboxText": "Automap Conversion Information",
+        "simpleValueType": true,
+        "defaultValue": true,
+        "help": "If enabled, the tag will attempt to automatically map parameters from your event data.\n\u003cbr/\u003e\u003cbr/\u003e\nAny value you manually enter in a field below will always override the auto-mapped value.\n\u003cbr/\u003e\u003cbr/\u003e\nDefault mappings:\n\u003cul\u003e\n\u003cli\u003e Conversion DateTime:\n\u003cul\u003e\n\u003cli\u003e\u003ci\u003eeventData.adjustmentDateTime\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eCurrent Time\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003egclid: \u003ci\u003eeventData.gclid\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003ewbraid: \u003ci\u003eeventData.wbraid\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003egbraid: \u003ci\u003eeventData.gbraid\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e"
+      },
+      {
         "type": "SELECT",
         "name": "conversionEnvironment",
         "displayName": "Conversion Environment",
@@ -328,7 +336,15 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "LABEL",
         "name": "cartDataLabel",
-        "displayName": "More info about the Cart Data can be found \u003ca href\u003d\"https://developers.google.com/google-ads/api/reference/rpc/v22/ConversionUploadService/UploadClickConversions?hl\u003den\u0026transport\u003drest#CartData\"\u003eby this link\u003c/a\u003e."
+        "displayName": "More info about the Cart Data can be found \u003ca href\u003d\"https://developers.google.com/google-ads/api/reference/rpc/v22/ConversionUploadService/UploadClickConversions?hl\u003den\u0026transport\u003drest#CartData\"\u003ehere\u003c/a\u003e."
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "autoMapCartData",
+        "checkboxText": "Automap Cart Data",
+        "simpleValueType": true,
+        "defaultValue": true,
+        "help": "If enabled, the tag will attempt to automatically map parameters from your event data.\n\u003cbr/\u003e\u003cbr/\u003e\nAny value you manually enter in a field below will always override the auto-mapped value.\n\u003cbr/\u003e\u003cbr/\u003e\nDefault mappings:\n\u003cul\u003e\n\u003cli\u003eConversion Value:\n\u003cul\u003e\n\u003cli\u003e\u003ci\u003eeventData.conversionValue\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.value\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData[\u0027x-ga-mp1-ev\u0027]\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData[\u0027x-ga-mp1-tr\u0027]\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eSum of eventData.items Price * Quantity\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e1\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003eCurrency Code:\n\u003cul\u003e\n\u003cli\u003e\u003ci\u003eeventData.currencyCode\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.currency\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.items[].currency\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003e\u0027USD\u0027\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003eOrder ID:\n\u003cul\u003e\n\u003cli\u003e\u003ci\u003eeventData.orderId\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.order_id\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.transaction_id\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003eItems: \u003ci\u003eeventData.items\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003eMerchant ID: \u003ci\u003eeventData.merchantId\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003eFeed Country Code: \u003ci\u003eeventData.feedCountryCode\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003eFeed Language Code: \u003ci\u003eeventData.feedLanguageCode\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003eLocal Transaction Cost: \u003ci\u003eeventData.localTransactionCost\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e"
       },
       {
         "type": "TEXT",
@@ -394,6 +410,14 @@ ___TEMPLATE_PARAMETERS___
     "groupStyle": "ZIPPY_CLOSED",
     "type": "GROUP",
     "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "autoMapUserData",
+        "checkboxText": "Automap User Data",
+        "simpleValueType": true,
+        "defaultValue": true,
+        "help": "If enabled, the tag will attempt to automatically map parameters from your event data.\n\u003cbr/\u003e\u003cbr/\u003e\nAny value you manually enter in a field below will always override the auto-mapped value.\n\u003cbr/\u003e\u003cbr/\u003e\nDefault mappings:\n\u003cul\u003e\n\u003cli\u003eEmail:\n\u003cul\u003e\n\u003cli\u003e\u003ci\u003eeventData.hashedEmail\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.email\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.email_address\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_data.email\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_data.email_address\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_properties.email\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_properties.email_address\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user.email\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user.email_address\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003ePhone:\n\u003cul\u003e\n\u003cli\u003e\u003ci\u003eeventData.phone\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.phone_number\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_data.phone\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_data.phone_number\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_properties.phone\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user_properties.phone_number\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user.phone\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003e\u003ci\u003eeventData.user.phone_number\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003c/li\u003e\n\u003cli\u003eMobile device ID: \u003ci\u003eeventData.mobileId\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003eThird Party User ID: \u003ci\u003eeventData.thirdPartyUserId\u003c/i\u003e\u003c/li\u003e\n\u003cli\u003eAddress: \u003ci\u003eeventData.addressInfo\u003c/i\u003e\u003c/li\u003e\n\u003c/ul\u003e"
+      },
       {
         "name": "userDataList",
         "simpleTableColumns": [
@@ -501,117 +525,19 @@ ___TEMPLATE_PARAMETERS___
         "defaultValue": "optional"
       }
     ]
-  },
-  {
-    "displayName": "Logs Settings",
-    "name": "logsGroup",
-    "groupStyle": "ZIPPY_CLOSED",
-    "type": "GROUP",
-    "subParams": [
-      {
-        "type": "RADIO",
-        "name": "logType",
-        "radioItems": [
-          {
-            "value": "no",
-            "displayValue": "Do not log"
-          },
-          {
-            "value": "debug",
-            "displayValue": "Log to console during debug and preview"
-          },
-          {
-            "value": "always",
-            "displayValue": "Always log to console"
-          }
-        ],
-        "simpleValueType": true,
-        "defaultValue": "debug"
-      }
-    ]
-  },
-  {
-    "displayName": "BigQuery Logs Settings",
-    "name": "bigQueryLogsGroup",
-    "groupStyle": "ZIPPY_CLOSED",
-    "type": "GROUP",
-    "subParams": [
-      {
-        "type": "RADIO",
-        "name": "bigQueryLogType",
-        "radioItems": [
-          {
-            "value": "no",
-            "displayValue": "Do not log to BigQuery"
-          },
-          {
-            "value": "always",
-            "displayValue": "Log to BigQuery"
-          }
-        ],
-        "simpleValueType": true,
-        "defaultValue": "no"
-      },
-      {
-        "type": "GROUP",
-        "name": "logsBigQueryConfigGroup",
-        "groupStyle": "NO_ZIPPY",
-        "subParams": [
-          {
-            "type": "TEXT",
-            "name": "logBigQueryProjectId",
-            "displayName": "BigQuery Project ID",
-            "simpleValueType": true,
-            "help": "Optional.  \u003cbr\u003e\u003cbr\u003e  If omitted, it will be retrieved from the environment variable \u003cI\u003eGOOGLE_CLOUD_PROJECT\u003c/i\u003e where the server container is running. If the server container is running on Google Cloud, \u003cI\u003eGOOGLE_CLOUD_PROJECT\u003c/i\u003e will already be set to the Google Cloud project\u0027s ID."
-          },
-          {
-            "type": "TEXT",
-            "name": "logBigQueryDatasetId",
-            "displayName": "BigQuery Dataset ID",
-            "simpleValueType": true,
-            "valueValidators": [
-              {
-                "type": "NON_EMPTY"
-              }
-            ]
-          },
-          {
-            "type": "TEXT",
-            "name": "logBigQueryTableId",
-            "displayName": "BigQuery Table ID",
-            "simpleValueType": true,
-            "valueValidators": [
-              {
-                "type": "NON_EMPTY"
-              }
-            ]
-          }
-        ],
-        "enablingConditions": [
-          {
-            "paramName": "bigQueryLogType",
-            "paramValue": "always",
-            "type": "EQUALS"
-          }
-        ]
-      }
-    ]
   }
 ]
 
 
 ___SANDBOXED_JS_FOR_SERVER___
 
-const BigQuery = require('BigQuery');
 const encodeUriComponent = require('encodeUriComponent');
 const getAllEventData = require('getAllEventData');
-const getContainerVersion = require('getContainerVersion');
 const getGoogleAuth = require('getGoogleAuth');
 const getRequestHeader = require('getRequestHeader');
 const getTimestampMillis = require('getTimestampMillis');
 const getType = require('getType');
 const JSON = require('JSON');
-const logToConsole = require('logToConsole');
 const makeInteger = require('makeInteger');
 const makeNumber = require('makeNumber');
 const makeString = require('makeString');
@@ -623,7 +549,7 @@ const sha256Sync = require('sha256Sync');
 /*==============================================================================
 ==============================================================================*/
 
-const apiVersion = '22';
+const API_VERSION = '24';
 const eventData = getAllEventData();
 
 if (!isConsentGivenOrNotRequired(data, eventData)) {
@@ -635,109 +561,51 @@ if (url && url.lastIndexOf('https://gtm-msr.appspot.com/', 0) === 0) {
   return data.gtmOnSuccess();
 }
 
-const postBody = getData();
-const postUrl = getUrl();
-
-if (data.authFlow === 'stape') {
-  return sendConversionRequestApi();
-} else {
-  return sendConversionRequest();
-}
+return sendConversionRequest();
 
 /*==============================================================================
   Vendor related functions
 ==============================================================================*/
 
-function sendConversionRequestApi() {
-  log({
-    Name: 'GAdsOfflineConversion',
-    Type: 'Request',
-    EventName: makeString(data.conversionAction),
-    RequestMethod: 'POST',
-    RequestUrl: postUrl,
-    RequestBody: postBody
-  });
-
-  sendHttpRequest(
-    postUrl,
-    (statusCode, headers, body) => {
-      log({
-        Name: 'GAdsOfflineConversion',
-        Type: 'Response',
-        EventName: makeString(data.conversionAction),
-        ResponseStatusCode: statusCode,
-        ResponseHeaders: headers,
-        ResponseBody: body
-      });
-
-      if (statusCode >= 200 && statusCode < 400) {
-        data.gtmOnSuccess();
-      } else {
-        data.gtmOnFailure();
-      }
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'login-customer-id': data.customerId,
-        'x-gads-api-version': apiVersion
-      },
-      method: 'POST'
-    },
-    JSON.stringify(postBody)
-  );
-}
-
 function sendConversionRequest() {
-  log({
-    Name: 'GAdsOfflineConversion',
-    Type: 'Request',
-    EventName: makeString(data.conversionAction),
-    RequestMethod: 'POST',
-    RequestUrl: postUrl,
-    RequestBody: postBody
-  });
-
-  const auth = getGoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/adwords']
-  });
-
-  sendHttpRequest(
-    postUrl,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'login-customer-id': data.customerId,
-        'developer-token': data.developerToken
-      },
-      method: 'POST',
-      authorization: auth
+  const postBody = getData();
+  const postUrl = getUrl();
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      'login-customer-id': data.customerId
     },
-    JSON.stringify(postBody)
-  ).then((result) => {
-    // .then has to be used when the Authorization header is in use
-    log({
-      Name: 'GAdsOfflineConversion',
-      Type: 'Response',
-      EventName: makeString(data.conversionAction),
-      ResponseStatusCode: result.statusCode,
-      ResponseHeaders: result.headers,
-      ResponseBody: result.body
-    });
+    method: 'POST'
+  };
 
-    if (result.statusCode >= 200 && result.statusCode < 400) {
-      data.gtmOnSuccess();
-    } else {
-      data.gtmOnFailure();
-    }
-  });
+  if (data.authFlow === 'own') {
+    const auth = getGoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/adwords']
+    });
+    options.authorization = auth;
+    options.headers['developer-token'] = data.developerToken;
+  } else {
+    options.headers['x-gads-api-version'] = API_VERSION;
+  }
+
+  sendHttpRequest(postUrl, options, JSON.stringify(postBody))
+    .then((result) => {
+      // .then has to be used when the Authorization header is in use
+      if (result.statusCode >= 200 && result.statusCode < 400) {
+        return data.gtmOnSuccess();
+      }
+      return data.gtmOnFailure();
+    })
+    .catch((result) => {
+      return data.gtmOnFailure();
+    });
 }
 
 function getUrl() {
   if (data.authFlow === 'own') {
     return (
       'https://googleads.googleapis.com/v' +
-      apiVersion +
+      API_VERSION +
       '/customers/' +
       enc(data.opCustomerId) +
       ':uploadClickConversions'
@@ -795,9 +663,13 @@ function getData() {
 }
 
 function addConversionAttribution(eventData, mappedData) {
-  const gbraid = data.gbraid || eventData.gbraid;
-  const wbraid = data.wbraid || eventData.wbraid;
-  const gclid = data.gclid || eventData.gclid;
+  const autoMapEnabled = data.hasOwnProperty('autoMapConversionInformation')
+    ? data.autoMapConversionInformation
+    : true; // To accomodate a breaking change.
+
+  const gbraid = data.gbraid || (autoMapEnabled ? eventData.gbraid : undefined);
+  const wbraid = data.wbraid || (autoMapEnabled ? eventData.wbraid : undefined);
+  const gclid = data.gclid || (autoMapEnabled ? eventData.gclid : undefined);
 
   if (gclid) mappedData.gclid = gclid;
   if (gbraid) mappedData.gbraid = gbraid;
@@ -805,10 +677,10 @@ function addConversionAttribution(eventData, mappedData) {
     mappedData.wbraid = wbraid;
   }
 
-  if (data.conversionDateTime) mappedData.conversionDateTime = data.conversionDateTime;
-  else if (eventData.conversionDateTime)
-    mappedData.conversionDateTime = eventData.conversionDateTime;
-  else mappedData.conversionDateTime = getConversionDateTime();
+  const conversionDateTime =
+    data.conversionDateTime ||
+    (autoMapEnabled ? eventData.conversionDateTime || getConversionDateTime() : undefined);
+  if (conversionDateTime) mappedData.conversionDateTime = conversionDateTime;
 
   if (data.externalAttributionModel || data.externalAttributionCredit) {
     mappedData.external_attribution_data = {};
@@ -843,11 +715,13 @@ function addConsentData(mappedData) {
 }
 
 function addCartData(eventData, mappedData) {
+  const autoMapEnabled = data.hasOwnProperty('autoMapCartData') ? data.autoMapCartData : true; // To accomodate a breaking change.
+
   let currencyFromItems = '';
   let valueFromItems = 0;
   let items = data.items;
 
-  if (!items && eventData.items && eventData.items[0]) {
+  if (!items && autoMapEnabled && eventData.items && eventData.items[0]) {
     items = [];
     currencyFromItems = eventData.items[0].currency;
 
@@ -883,49 +757,58 @@ function addCartData(eventData, mappedData) {
 
     if (items) mappedData.cartData.items = items;
 
-    if (data.merchantId) mappedData.cartData.merchantId = data.merchantId;
-    else if (eventData.merchantId) mappedData.cartData.merchantId = eventData.merchantId;
+    const merchantId = data.merchantId || (autoMapEnabled ? eventData.merchantId : undefined);
+    if (merchantId) mappedData.cartData.merchantId = merchantId;
 
-    if (data.feedCountryCode) mappedData.cartData.feedCountryCode = data.feedCountryCode;
-    else if (eventData.feedCountryCode)
-      mappedData.cartData.feedCountryCode = eventData.feedCountryCode;
+    const feedCountryCode =
+      data.feedCountryCode || (autoMapEnabled ? eventData.feedCountryCode : undefined);
+    if (feedCountryCode) mappedData.cartData.feedCountryCode = feedCountryCode;
 
-    if (data.feedLanguageCode) mappedData.cartData.feedLanguageCode = data.feedLanguageCode;
-    else if (eventData.feedLanguageCode)
-      mappedData.cartData.feedLanguageCode = eventData.feedLanguageCode;
+    const feedLanguageCode =
+      data.feedLanguageCode || (autoMapEnabled ? eventData.feedLanguageCode : undefined);
+    if (feedLanguageCode) mappedData.cartData.feedLanguageCode = feedLanguageCode;
 
-    if (data.localTransactionCost)
-      mappedData.cartData.localTransactionCost = makeNumber(data.localTransactionCost);
-    else if (eventData.localTransactionCost)
-      mappedData.cartData.localTransactionCost = eventData.localTransactionCost;
+    const localTransactionCost =
+      data.localTransactionCost || (autoMapEnabled ? eventData.localTransactionCost : undefined);
+    if (localTransactionCost) {
+      mappedData.cartData.localTransactionCost = makeNumber(localTransactionCost);
+    }
   }
 
-  if (data.orderId) mappedData.orderId = makeString(data.orderId);
-  else if (eventData.orderId) mappedData.orderId = makeString(eventData.orderId);
-  else if (eventData.order_id) mappedData.orderId = makeString(eventData.order_id);
-  else if (eventData.transaction_id) mappedData.orderId = makeString(eventData.transaction_id);
+  const orderId =
+    data.orderId ||
+    (autoMapEnabled
+      ? eventData.orderId || eventData.order_id || eventData.transaction_id
+      : undefined);
+  if (orderId) mappedData.orderId = makeString(orderId);
 
-  if (data.conversionValue) mappedData.conversionValue = makeNumber(data.conversionValue);
-  else if (eventData.value) mappedData.conversionValue = makeNumber(eventData.value);
-  else if (eventData.conversionValue)
-    mappedData.conversionValue = makeNumber(eventData.conversionValue);
-  else if (eventData['x-ga-mp1-ev'])
-    mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-ev']);
-  else if (eventData['x-ga-mp1-tr'])
-    mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-tr']);
-  else if (valueFromItems) mappedData.conversionValue = makeNumber(valueFromItems);
-  else mappedData.conversionValue = 1;
+  const conversionValue = makeNumber(
+    data.conversionValue ||
+      (autoMapEnabled
+        ? eventData.value ||
+          eventData.conversionValue ||
+          eventData['x-ga-mp1-ev'] ||
+          eventData['x-ga-mp1-tr'] ||
+          valueFromItems
+        : undefined) ||
+      1
+  );
+  if (conversionValue) mappedData.conversionValue = conversionValue;
 
-  if (data.currencyCode) mappedData.currencyCode = data.currencyCode;
-  else if (eventData.currencyCode) mappedData.currencyCode = eventData.currencyCode;
-  else if (eventData.currency) mappedData.currencyCode = eventData.currency;
-  else if (currencyFromItems) mappedData.currencyCode = currencyFromItems;
-  else mappedData.currencyCode = 'USD';
+  const currencyCode =
+    data.currencyCode ||
+    (autoMapEnabled
+      ? eventData.currencyCode || eventData.currency || currencyFromItems
+      : undefined) ||
+    'USD';
+  if (currencyCode) mappedData.currencyCode = currencyCode;
 
   return mappedData;
 }
 
 function addUserIdentifiers(eventData, mappedData) {
+  const autoMapEnabled = data.hasOwnProperty('autoMapUserData') ? data.autoMapUserData : true; // To accomodate a breaking change.
+
   let hashedEmail;
   let hashedPhoneNumber;
   let mobileId;
@@ -934,10 +817,6 @@ function addUserIdentifiers(eventData, mappedData) {
   let userIdentifiersMapped = [];
   let userEventData = {};
   const usedIdentifiers = [];
-
-  if (getType(eventData.user_data) === 'object') {
-    userEventData = eventData.user_data || eventData.user_properties || eventData.user;
-  }
 
   if (data.userDataList) {
     const userIdentifiers = [];
@@ -958,56 +837,59 @@ function addUserIdentifiers(eventData, mappedData) {
     userIdentifiersMapped = userIdentifiers;
   }
 
-  if (eventData.hashedEmail) hashedEmail = eventData.hashedEmail;
-  else if (eventData.email) hashedEmail = eventData.email;
-  else if (eventData.email_address) hashedEmail = eventData.email_address;
-  else if (userEventData.email) hashedEmail = userEventData.email;
-  else if (userEventData.email_address) hashedEmail = userEventData.email_address;
+  if (autoMapEnabled) {
+    if (getType(eventData.user_data) === 'object') {
+      userEventData = eventData.user_data || eventData.user_properties || eventData.user;
+    }
 
-  if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
-    userIdentifiersMapped.push({
-      hashedEmail: hashData('hashedEmail', hashedEmail),
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
+    hashedEmail =
+      eventData.hashedEmail ||
+      eventData.email ||
+      eventData.email_address ||
+      userEventData.email ||
+      userEventData.email_address;
+    if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
+      userIdentifiersMapped.push({
+        hashedEmail: hashData('hashedEmail', hashedEmail),
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (eventData.phone) hashedPhoneNumber = eventData.phone;
-  else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
-  else if (userEventData.phone) hashedPhoneNumber = userEventData.phone;
-  else if (userEventData.phone_number) hashedPhoneNumber = userEventData.phone_number;
+    hashedPhoneNumber =
+      eventData.phone ||
+      eventData.phone_number ||
+      userEventData.phone ||
+      userEventData.phone_number;
+    if (usedIdentifiers.indexOf('hashedPhoneNumber') === -1 && hashedPhoneNumber) {
+      userIdentifiersMapped.push({
+        hashedPhoneNumber: hashData('hashedPhoneNumber', hashedPhoneNumber),
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (usedIdentifiers.indexOf('hashedPhoneNumber') === -1 && hashedPhoneNumber) {
-    userIdentifiersMapped.push({
-      hashedPhoneNumber: hashData('hashedPhoneNumber', hashedPhoneNumber),
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
+    mobileId = eventData.mobileId;
+    if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
+      userIdentifiersMapped.push({
+        mobileId: mobileId,
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (eventData.mobileId) mobileId = eventData.mobileId;
+    thirdPartyUserId = eventData.thirdPartyUserId;
+    if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
+      userIdentifiersMapped.push({
+        thirdPartyUserId: thirdPartyUserId,
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
-    userIdentifiersMapped.push({
-      mobileId: mobileId,
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
-
-  if (eventData.thirdPartyUserId) thirdPartyUserId = eventData.thirdPartyUserId;
-
-  if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
-    userIdentifiersMapped.push({
-      thirdPartyUserId: thirdPartyUserId,
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
-
-  if (eventData.addressInfo) addressInfo = eventData.addressInfo;
-
-  if (usedIdentifiers.indexOf('addressInfo') === -1 && addressInfo) {
-    userIdentifiersMapped.push({
-      addressInfo: addressInfo,
-      userIdentifierSource: 'UNSPECIFIED'
-    });
+    addressInfo = eventData.addressInfo;
+    if (usedIdentifiers.indexOf('addressInfo') === -1 && addressInfo) {
+      userIdentifiersMapped.push({
+        addressInfo: addressInfo,
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
   }
 
   if (userIdentifiersMapped.length) {
@@ -1065,6 +947,10 @@ function hashData(key, value) {
 
   return sha256Sync(value, { outputEncoding: 'hex' });
 }
+
+/*==============================================================================
+  Helpers
+==============================================================================*/
 
 function convertTimestampToISO(timestamp) {
   const secToMs = function (s) {
@@ -1135,10 +1021,6 @@ function convertTimestampToISO(timestamp) {
   );
 }
 
-/*==============================================================================
-  Helpers
-==============================================================================*/
-
 function isHashed(value) {
   if (!value) return false;
   return makeString(value).match('^[A-Fa-f0-9]{64}$') !== null;
@@ -1154,94 +1036,6 @@ function isConsentGivenOrNotRequired(data, eventData) {
   if (eventData.consent_state) return !!eventData.consent_state.ad_storage;
   const xGaGcs = eventData['x-ga-gcs'] || ''; // x-ga-gcs is a string like "G110"
   return xGaGcs[2] === '1';
-}
-
-function log(rawDataToLog) {
-  const logDestinationsHandlers = {};
-  if (determinateIsLoggingEnabled()) logDestinationsHandlers.console = logConsole;
-  if (determinateIsLoggingEnabledForBigQuery()) logDestinationsHandlers.bigQuery = logToBigQuery;
-
-  rawDataToLog.TraceId = getRequestHeader('trace-id');
-
-  const keyMappings = {
-    // No transformation for Console is needed.
-    bigQuery: {
-      Name: 'tag_name',
-      Type: 'type',
-      TraceId: 'trace_id',
-      EventName: 'event_name',
-      RequestMethod: 'request_method',
-      RequestUrl: 'request_url',
-      RequestBody: 'request_body',
-      ResponseStatusCode: 'response_status_code',
-      ResponseHeaders: 'response_headers',
-      ResponseBody: 'response_body'
-    }
-  };
-
-  for (const logDestination in logDestinationsHandlers) {
-    const handler = logDestinationsHandlers[logDestination];
-    if (!handler) continue;
-
-    const mapping = keyMappings[logDestination];
-    const dataToLog = mapping ? {} : rawDataToLog;
-
-    if (mapping) {
-      for (const key in rawDataToLog) {
-        const mappedKey = mapping[key] || key;
-        dataToLog[mappedKey] = rawDataToLog[key];
-      }
-    }
-
-    handler(dataToLog);
-  }
-}
-
-function logConsole(dataToLog) {
-  logToConsole(JSON.stringify(dataToLog));
-}
-
-function logToBigQuery(dataToLog) {
-  const connectionInfo = {
-    projectId: data.logBigQueryProjectId,
-    datasetId: data.logBigQueryDatasetId,
-    tableId: data.logBigQueryTableId
-  };
-
-  dataToLog.timestamp = getTimestampMillis();
-
-  ['request_body', 'response_headers', 'response_body'].forEach((p) => {
-    dataToLog[p] = JSON.stringify(dataToLog[p]);
-  });
-
-  BigQuery.insert(connectionInfo, [dataToLog], { ignoreUnknownValues: true });
-}
-
-function determinateIsLoggingEnabled() {
-  const containerVersion = getContainerVersion();
-  const isDebug = !!(
-    containerVersion &&
-    (containerVersion.debugMode || containerVersion.previewMode)
-  );
-
-  if (!data.logType) {
-    return isDebug;
-  }
-
-  if (data.logType === 'no') {
-    return false;
-  }
-
-  if (data.logType === 'debug') {
-    return isDebug;
-  }
-
-  return data.logType === 'always';
-}
-
-function determinateIsLoggingEnabledForBigQuery() {
-  if (data.bigQueryLogType === 'no') return false;
-  return data.bigQueryLogType === 'always';
 }
 
 
@@ -1296,37 +1090,6 @@ ___SERVER_PERMISSIONS___
   {
     "instance": {
       "key": {
-        "publicId": "logging",
-        "versionId": "1"
-      },
-      "param": [
-        {
-          "key": "environments",
-          "value": {
-            "type": 1,
-            "string": "all"
-          }
-        }
-      ]
-    },
-    "clientAnnotations": {
-      "isEditedByUser": true
-    },
-    "isRequired": true
-  },
-  {
-    "instance": {
-      "key": {
-        "publicId": "read_container_data",
-        "versionId": "1"
-      },
-      "param": []
-    },
-    "isRequired": true
-  },
-  {
-    "instance": {
-      "key": {
         "publicId": "read_request",
         "versionId": "1"
       },
@@ -1336,21 +1099,6 @@ ___SERVER_PERMISSIONS___
           "value": {
             "type": 2,
             "listItem": [
-              {
-                "type": 3,
-                "mapKey": [
-                  {
-                    "type": 1,
-                    "string": "headerName"
-                  }
-                ],
-                "mapValue": [
-                  {
-                    "type": 1,
-                    "string": "trace-id"
-                  }
-                ]
-              },
               {
                 "type": 3,
                 "mapKey": [
@@ -1495,111 +1243,13 @@ ___SERVER_PERMISSIONS___
       "isEditedByUser": true
     },
     "isRequired": true
-  },
-  {
-    "instance": {
-      "key": {
-        "publicId": "access_bigquery",
-        "versionId": "1"
-      },
-      "param": [
-        {
-          "key": "allowedTables",
-          "value": {
-            "type": 2,
-            "listItem": [
-              {
-                "type": 3,
-                "mapKey": [
-                  {
-                    "type": 1,
-                    "string": "projectId"
-                  },
-                  {
-                    "type": 1,
-                    "string": "datasetId"
-                  },
-                  {
-                    "type": 1,
-                    "string": "tableId"
-                  },
-                  {
-                    "type": 1,
-                    "string": "operation"
-                  }
-                ],
-                "mapValue": [
-                  {
-                    "type": 1,
-                    "string": "*"
-                  },
-                  {
-                    "type": 1,
-                    "string": "*"
-                  },
-                  {
-                    "type": 1,
-                    "string": "*"
-                  },
-                  {
-                    "type": 1,
-                    "string": "write"
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "clientAnnotations": {
-      "isEditedByUser": true
-    },
-    "isRequired": true
   }
 ]
 
 
 ___TESTS___
 
-scenarios:
-- name: Should log to console, if the 'Always log to console' option is selected
-  code: "mockData.logType = 'always';\nmockData.authFlow = 'stape';\nmockData.conversionEnvironment\
-    \ = 'UNSPECIFIED';\nmockData.adPersonalization = 'UNSPECIFIED';\nmockData.adUserData\
-    \ = 'UNSPECIFIED';\n\nconst expectedDebugMode = true;\nmock('getContainerVersion',\
-    \ () => {\n  return {\n    debugMode: expectedDebugMode\n  };\n});\n  \nmock('logToConsole',\
-    \ (logData) => {\n  const parsedLogData = JSON.parse(logData);\n  requiredConsoleKeys.forEach(p\
-    \ => assertThat(parsedLogData[p]).isDefined());\n});\n\nrunCode(mockData);\n\n\
-    assertApi('logToConsole').wasCalled();\nassertApi('gtmOnSuccess').wasCalled();"
-- name: Should log to console, if the 'Log during debug and preview' option is selected
-    AND is on preview mode
-  code: "mockData.logType = 'debug';\nmockData.authFlow = 'stape';\n\nconst expectedDebugMode\
-    \ = true;\nmock('getContainerVersion', () => {\n  return {\n    debugMode: expectedDebugMode\n\
-    \  };\n});\n  \nmock('logToConsole', (logData) => {\n  const parsedLogData = JSON.parse(logData);\n\
-    \  requiredConsoleKeys.forEach(p => assertThat(parsedLogData[p]).isDefined());\n\
-    });\n\nrunCode(mockData);\n\nassertApi('logToConsole').wasCalled();\nassertApi('gtmOnSuccess').wasCalled();"
-- name: Should NOT log to console, if the 'Log during debug and preview' option is
-    selected AND is NOT on preview mode
-  code: "mockData.logType = 'debug';\nmockData.authFlow = 'stape';\n\nconst expectedDebugMode\
-    \ = false;\nmock('getContainerVersion', () => {\n  return {\n    debugMode: expectedDebugMode\n\
-    \  };\n}); \n\nrunCode(mockData);\n  \nassertApi('logToConsole').wasNotCalled();"
-- name: Should NOT log to console, if the 'Do not log' option is selected
-  code: "mockData.logType = 'no';\nmockData.authFlow = 'stape';\n\nrunCode(mockData);\n\
-    \  \nassertApi('logToConsole').wasNotCalled();"
-- name: Should log to BQ, if the 'Log to BigQuery' option is selected
-  code: "mockData.bigQueryLogType = 'always';\nmockData.authFlow = 'stape';\n\nmockObject('BigQuery',\
-    \ {\n  insert: (connectionInfo, rows, options) => { \n    assertThat(connectionInfo).isDefined();\n\
-    \    assertThat(rows).isArray();\n    assertThat(rows).hasLength(1);\n    requiredBqKeys.forEach(p\
-    \ => assertThat(rows[0][p]).isDefined());\n    assertThat(options).isEqualTo(expectedBqOptions);\n\
-    \    return Promise.create((resolve, reject) => {\n      resolve();\n    });\n\
-    \  }\n});\n\nrunCode(mockData);\n\nassertApi('gtmOnSuccess').wasCalled();\nassertApi('gtmOnFailure').wasNotCalled();"
-- name: Should NOT log to BQ, if the 'Do not log to BigQuery' option is selected
-  code: "mockData.bigQueryLogType = 'no';\nmockData.authFlow = 'stape';\n\n// assertApi\
-    \ doesn't work for 'BigQuery.insert()'.\n// Ref: https://gtm-gear.com/posts/gtm-templates-testing/\n\
-    mockObject('BigQuery', {\n  insert: (connectionInfo, rows, options) => { \n  \
-    \  fail('BigQuery.insert should not have been called.');\n    return Promise.create((resolve,\
-    \ reject) => {\n      resolve();\n    });\n  }\n});\n\nrunCode(mockData);\n\n\
-    assertApi('gtmOnSuccess').wasCalled();\nassertApi('gtmOnFailure').wasNotCalled();"
+scenarios: []
 setup: |-
   const JSON = require('JSON');
   const Promise = require('Promise');
@@ -1632,6 +1282,8 @@ setup: |-
 
 ___NOTES___
 
-Created on 03/03/2022, 20:20:20
+2026-05-25 Change Notes:
+ - Logging removal.
 
+Created on 03/03/2022, 20:20:20
 
