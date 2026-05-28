@@ -2,6 +2,6 @@
 node_modules
 jsconfig.json
 package-lock.json
-package.jsonserver-gtm-sandboxed-apis.d.ts
-.prettierignore
 package.json
+server-gtm-sandboxed-apis.d.ts
+.prettierignore
