@@ -1,13 +1,10 @@
-const BigQuery = require('BigQuery');
 const encodeUriComponent = require('encodeUriComponent');
 const getAllEventData = require('getAllEventData');
-const getContainerVersion = require('getContainerVersion');
 const getGoogleAuth = require('getGoogleAuth');
 const getRequestHeader = require('getRequestHeader');
 const getTimestampMillis = require('getTimestampMillis');
 const getType = require('getType');
 const JSON = require('JSON');
-const logToConsole = require('logToConsole');
 const makeInteger = require('makeInteger');
 const makeNumber = require('makeNumber');
 const makeString = require('makeString');
@@ -19,7 +16,7 @@ const sha256Sync = require('sha256Sync');
 /*==============================================================================
 ==============================================================================*/
 
-const apiVersion = '22';
+const API_VERSION = '24';
 const eventData = getAllEventData();
 
 if (!isConsentGivenOrNotRequired(data, eventData)) {
@@ -31,109 +28,51 @@ if (url && url.lastIndexOf('https://gtm-msr.appspot.com/', 0) === 0) {
   return data.gtmOnSuccess();
 }
 
-const postBody = getData();
-const postUrl = getUrl();
-
-if (data.authFlow === 'stape') {
-  return sendConversionRequestApi();
-} else {
-  return sendConversionRequest();
-}
+return sendConversionRequest();
 
 /*==============================================================================
   Vendor related functions
 ==============================================================================*/
 
-function sendConversionRequestApi() {
-  log({
-    Name: 'GAdsOfflineConversion',
-    Type: 'Request',
-    EventName: makeString(data.conversionAction),
-    RequestMethod: 'POST',
-    RequestUrl: postUrl,
-    RequestBody: postBody
-  });
-
-  sendHttpRequest(
-    postUrl,
-    (statusCode, headers, body) => {
-      log({
-        Name: 'GAdsOfflineConversion',
-        Type: 'Response',
-        EventName: makeString(data.conversionAction),
-        ResponseStatusCode: statusCode,
-        ResponseHeaders: headers,
-        ResponseBody: body
-      });
-
-      if (statusCode >= 200 && statusCode < 400) {
-        data.gtmOnSuccess();
-      } else {
-        data.gtmOnFailure();
-      }
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'login-customer-id': data.customerId,
-        'x-gads-api-version': apiVersion
-      },
-      method: 'POST'
-    },
-    JSON.stringify(postBody)
-  );
-}
-
 function sendConversionRequest() {
-  log({
-    Name: 'GAdsOfflineConversion',
-    Type: 'Request',
-    EventName: makeString(data.conversionAction),
-    RequestMethod: 'POST',
-    RequestUrl: postUrl,
-    RequestBody: postBody
-  });
-
-  const auth = getGoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/adwords']
-  });
-
-  sendHttpRequest(
-    postUrl,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'login-customer-id': data.customerId,
-        'developer-token': data.developerToken
-      },
-      method: 'POST',
-      authorization: auth
+  const postBody = getData();
+  const postUrl = getUrl();
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      'login-customer-id': data.customerId
     },
-    JSON.stringify(postBody)
-  ).then((result) => {
-    // .then has to be used when the Authorization header is in use
-    log({
-      Name: 'GAdsOfflineConversion',
-      Type: 'Response',
-      EventName: makeString(data.conversionAction),
-      ResponseStatusCode: result.statusCode,
-      ResponseHeaders: result.headers,
-      ResponseBody: result.body
-    });
+    method: 'POST'
+  };
 
-    if (result.statusCode >= 200 && result.statusCode < 400) {
-      data.gtmOnSuccess();
-    } else {
-      data.gtmOnFailure();
-    }
-  });
+  if (data.authFlow === 'own') {
+    const auth = getGoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/adwords']
+    });
+    options.authorization = auth;
+    options.headers['developer-token'] = data.developerToken;
+  } else {
+    options.headers['x-gads-api-version'] = API_VERSION;
+  }
+
+  sendHttpRequest(postUrl, options, JSON.stringify(postBody))
+    .then((result) => {
+      // .then has to be used when the Authorization header is in use
+      if (result.statusCode >= 200 && result.statusCode < 400) {
+        return data.gtmOnSuccess();
+      }
+      return data.gtmOnFailure();
+    })
+    .catch((result) => {
+      return data.gtmOnFailure();
+    });
 }
 
 function getUrl() {
   if (data.authFlow === 'own') {
     return (
       'https://googleads.googleapis.com/v' +
-      apiVersion +
+      API_VERSION +
       '/customers/' +
       enc(data.opCustomerId) +
       ':uploadClickConversions'
@@ -191,9 +130,13 @@ function getData() {
 }
 
 function addConversionAttribution(eventData, mappedData) {
-  const gbraid = data.gbraid || eventData.gbraid;
-  const wbraid = data.wbraid || eventData.wbraid;
-  const gclid = data.gclid || eventData.gclid;
+  const autoMapEnabled = data.hasOwnProperty('autoMapConversionInformation')
+    ? data.autoMapConversionInformation
+    : true; // To accomodate a breaking change.
+
+  const gbraid = data.gbraid || (autoMapEnabled ? eventData.gbraid : undefined);
+  const wbraid = data.wbraid || (autoMapEnabled ? eventData.wbraid : undefined);
+  const gclid = data.gclid || (autoMapEnabled ? eventData.gclid : undefined);
 
   if (gclid) mappedData.gclid = gclid;
   if (gbraid) mappedData.gbraid = gbraid;
@@ -201,10 +144,10 @@ function addConversionAttribution(eventData, mappedData) {
     mappedData.wbraid = wbraid;
   }
 
-  if (data.conversionDateTime) mappedData.conversionDateTime = data.conversionDateTime;
-  else if (eventData.conversionDateTime)
-    mappedData.conversionDateTime = eventData.conversionDateTime;
-  else mappedData.conversionDateTime = getConversionDateTime();
+  const conversionDateTime =
+    data.conversionDateTime ||
+    (autoMapEnabled ? eventData.conversionDateTime || getConversionDateTime() : undefined);
+  if (conversionDateTime) mappedData.conversionDateTime = conversionDateTime;
 
   if (data.externalAttributionModel || data.externalAttributionCredit) {
     mappedData.external_attribution_data = {};
@@ -239,11 +182,13 @@ function addConsentData(mappedData) {
 }
 
 function addCartData(eventData, mappedData) {
+  const autoMapEnabled = data.hasOwnProperty('autoMapCartData') ? data.autoMapCartData : true; // To accomodate a breaking change.
+
   let currencyFromItems = '';
   let valueFromItems = 0;
   let items = data.items;
 
-  if (!items && eventData.items && eventData.items[0]) {
+  if (!items && autoMapEnabled && eventData.items && eventData.items[0]) {
     items = [];
     currencyFromItems = eventData.items[0].currency;
 
@@ -279,49 +224,58 @@ function addCartData(eventData, mappedData) {
 
     if (items) mappedData.cartData.items = items;
 
-    if (data.merchantId) mappedData.cartData.merchantId = data.merchantId;
-    else if (eventData.merchantId) mappedData.cartData.merchantId = eventData.merchantId;
+    const merchantId = data.merchantId || (autoMapEnabled ? eventData.merchantId : undefined);
+    if (merchantId) mappedData.cartData.merchantId = merchantId;
 
-    if (data.feedCountryCode) mappedData.cartData.feedCountryCode = data.feedCountryCode;
-    else if (eventData.feedCountryCode)
-      mappedData.cartData.feedCountryCode = eventData.feedCountryCode;
+    const feedCountryCode =
+      data.feedCountryCode || (autoMapEnabled ? eventData.feedCountryCode : undefined);
+    if (feedCountryCode) mappedData.cartData.feedCountryCode = feedCountryCode;
 
-    if (data.feedLanguageCode) mappedData.cartData.feedLanguageCode = data.feedLanguageCode;
-    else if (eventData.feedLanguageCode)
-      mappedData.cartData.feedLanguageCode = eventData.feedLanguageCode;
+    const feedLanguageCode =
+      data.feedLanguageCode || (autoMapEnabled ? eventData.feedLanguageCode : undefined);
+    if (feedLanguageCode) mappedData.cartData.feedLanguageCode = feedLanguageCode;
 
-    if (data.localTransactionCost)
-      mappedData.cartData.localTransactionCost = makeNumber(data.localTransactionCost);
-    else if (eventData.localTransactionCost)
-      mappedData.cartData.localTransactionCost = eventData.localTransactionCost;
+    const localTransactionCost =
+      data.localTransactionCost || (autoMapEnabled ? eventData.localTransactionCost : undefined);
+    if (localTransactionCost) {
+      mappedData.cartData.localTransactionCost = makeNumber(localTransactionCost);
+    }
   }
 
-  if (data.orderId) mappedData.orderId = makeString(data.orderId);
-  else if (eventData.orderId) mappedData.orderId = makeString(eventData.orderId);
-  else if (eventData.order_id) mappedData.orderId = makeString(eventData.order_id);
-  else if (eventData.transaction_id) mappedData.orderId = makeString(eventData.transaction_id);
+  const orderId =
+    data.orderId ||
+    (autoMapEnabled
+      ? eventData.orderId || eventData.order_id || eventData.transaction_id
+      : undefined);
+  if (orderId) mappedData.orderId = makeString(orderId);
 
-  if (data.conversionValue) mappedData.conversionValue = makeNumber(data.conversionValue);
-  else if (eventData.value) mappedData.conversionValue = makeNumber(eventData.value);
-  else if (eventData.conversionValue)
-    mappedData.conversionValue = makeNumber(eventData.conversionValue);
-  else if (eventData['x-ga-mp1-ev'])
-    mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-ev']);
-  else if (eventData['x-ga-mp1-tr'])
-    mappedData.conversionValue = makeNumber(eventData['x-ga-mp1-tr']);
-  else if (valueFromItems) mappedData.conversionValue = makeNumber(valueFromItems);
-  else mappedData.conversionValue = 1;
+  const conversionValue = makeNumber(
+    data.conversionValue ||
+      (autoMapEnabled
+        ? eventData.value ||
+          eventData.conversionValue ||
+          eventData['x-ga-mp1-ev'] ||
+          eventData['x-ga-mp1-tr'] ||
+          valueFromItems
+        : undefined) ||
+      1
+  );
+  if (conversionValue) mappedData.conversionValue = conversionValue;
 
-  if (data.currencyCode) mappedData.currencyCode = data.currencyCode;
-  else if (eventData.currencyCode) mappedData.currencyCode = eventData.currencyCode;
-  else if (eventData.currency) mappedData.currencyCode = eventData.currency;
-  else if (currencyFromItems) mappedData.currencyCode = currencyFromItems;
-  else mappedData.currencyCode = 'USD';
+  const currencyCode =
+    data.currencyCode ||
+    (autoMapEnabled
+      ? eventData.currencyCode || eventData.currency || currencyFromItems
+      : undefined) ||
+    'USD';
+  if (currencyCode) mappedData.currencyCode = currencyCode;
 
   return mappedData;
 }
 
 function addUserIdentifiers(eventData, mappedData) {
+  const autoMapEnabled = data.hasOwnProperty('autoMapUserData') ? data.autoMapUserData : true; // To accomodate a breaking change.
+
   let hashedEmail;
   let hashedPhoneNumber;
   let mobileId;
@@ -330,10 +284,6 @@ function addUserIdentifiers(eventData, mappedData) {
   let userIdentifiersMapped = [];
   let userEventData = {};
   const usedIdentifiers = [];
-
-  if (getType(eventData.user_data) === 'object') {
-    userEventData = eventData.user_data || eventData.user_properties || eventData.user;
-  }
 
   if (data.userDataList) {
     const userIdentifiers = [];
@@ -354,56 +304,59 @@ function addUserIdentifiers(eventData, mappedData) {
     userIdentifiersMapped = userIdentifiers;
   }
 
-  if (eventData.hashedEmail) hashedEmail = eventData.hashedEmail;
-  else if (eventData.email) hashedEmail = eventData.email;
-  else if (eventData.email_address) hashedEmail = eventData.email_address;
-  else if (userEventData.email) hashedEmail = userEventData.email;
-  else if (userEventData.email_address) hashedEmail = userEventData.email_address;
+  if (autoMapEnabled) {
+    if (getType(eventData.user_data) === 'object') {
+      userEventData = eventData.user_data || eventData.user_properties || eventData.user;
+    }
 
-  if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
-    userIdentifiersMapped.push({
-      hashedEmail: hashData('hashedEmail', hashedEmail),
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
+    hashedEmail =
+      eventData.hashedEmail ||
+      eventData.email ||
+      eventData.email_address ||
+      userEventData.email ||
+      userEventData.email_address;
+    if (usedIdentifiers.indexOf('hashedEmail') === -1 && hashedEmail) {
+      userIdentifiersMapped.push({
+        hashedEmail: hashData('hashedEmail', hashedEmail),
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (eventData.phone) hashedPhoneNumber = eventData.phone;
-  else if (eventData.phone_number) hashedPhoneNumber = eventData.phone_number;
-  else if (userEventData.phone) hashedPhoneNumber = userEventData.phone;
-  else if (userEventData.phone_number) hashedPhoneNumber = userEventData.phone_number;
+    hashedPhoneNumber =
+      eventData.phone ||
+      eventData.phone_number ||
+      userEventData.phone ||
+      userEventData.phone_number;
+    if (usedIdentifiers.indexOf('hashedPhoneNumber') === -1 && hashedPhoneNumber) {
+      userIdentifiersMapped.push({
+        hashedPhoneNumber: hashData('hashedPhoneNumber', hashedPhoneNumber),
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (usedIdentifiers.indexOf('hashedPhoneNumber') === -1 && hashedPhoneNumber) {
-    userIdentifiersMapped.push({
-      hashedPhoneNumber: hashData('hashedPhoneNumber', hashedPhoneNumber),
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
+    mobileId = eventData.mobileId;
+    if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
+      userIdentifiersMapped.push({
+        mobileId: mobileId,
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (eventData.mobileId) mobileId = eventData.mobileId;
+    thirdPartyUserId = eventData.thirdPartyUserId;
+    if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
+      userIdentifiersMapped.push({
+        thirdPartyUserId: thirdPartyUserId,
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
 
-  if (usedIdentifiers.indexOf('mobileId') === -1 && mobileId) {
-    userIdentifiersMapped.push({
-      mobileId: mobileId,
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
-
-  if (eventData.thirdPartyUserId) thirdPartyUserId = eventData.thirdPartyUserId;
-
-  if (usedIdentifiers.indexOf('thirdPartyUserId') === -1 && thirdPartyUserId) {
-    userIdentifiersMapped.push({
-      thirdPartyUserId: thirdPartyUserId,
-      userIdentifierSource: 'UNSPECIFIED'
-    });
-  }
-
-  if (eventData.addressInfo) addressInfo = eventData.addressInfo;
-
-  if (usedIdentifiers.indexOf('addressInfo') === -1 && addressInfo) {
-    userIdentifiersMapped.push({
-      addressInfo: addressInfo,
-      userIdentifierSource: 'UNSPECIFIED'
-    });
+    addressInfo = eventData.addressInfo;
+    if (usedIdentifiers.indexOf('addressInfo') === -1 && addressInfo) {
+      userIdentifiersMapped.push({
+        addressInfo: addressInfo,
+        userIdentifierSource: 'UNSPECIFIED'
+      });
+    }
   }
 
   if (userIdentifiersMapped.length) {
@@ -461,6 +414,10 @@ function hashData(key, value) {
 
   return sha256Sync(value, { outputEncoding: 'hex' });
 }
+
+/*==============================================================================
+  Helpers
+==============================================================================*/
 
 function convertTimestampToISO(timestamp) {
   const secToMs = function (s) {
@@ -531,10 +488,6 @@ function convertTimestampToISO(timestamp) {
   );
 }
 
-/*==============================================================================
-  Helpers
-==============================================================================*/
-
 function isHashed(value) {
   if (!value) return false;
   return makeString(value).match('^[A-Fa-f0-9]{64}$') !== null;
@@ -550,92 +503,4 @@ function isConsentGivenOrNotRequired(data, eventData) {
   if (eventData.consent_state) return !!eventData.consent_state.ad_storage;
   const xGaGcs = eventData['x-ga-gcs'] || ''; // x-ga-gcs is a string like "G110"
   return xGaGcs[2] === '1';
-}
-
-function log(rawDataToLog) {
-  const logDestinationsHandlers = {};
-  if (determinateIsLoggingEnabled()) logDestinationsHandlers.console = logConsole;
-  if (determinateIsLoggingEnabledForBigQuery()) logDestinationsHandlers.bigQuery = logToBigQuery;
-
-  rawDataToLog.TraceId = getRequestHeader('trace-id');
-
-  const keyMappings = {
-    // No transformation for Console is needed.
-    bigQuery: {
-      Name: 'tag_name',
-      Type: 'type',
-      TraceId: 'trace_id',
-      EventName: 'event_name',
-      RequestMethod: 'request_method',
-      RequestUrl: 'request_url',
-      RequestBody: 'request_body',
-      ResponseStatusCode: 'response_status_code',
-      ResponseHeaders: 'response_headers',
-      ResponseBody: 'response_body'
-    }
-  };
-
-  for (const logDestination in logDestinationsHandlers) {
-    const handler = logDestinationsHandlers[logDestination];
-    if (!handler) continue;
-
-    const mapping = keyMappings[logDestination];
-    const dataToLog = mapping ? {} : rawDataToLog;
-
-    if (mapping) {
-      for (const key in rawDataToLog) {
-        const mappedKey = mapping[key] || key;
-        dataToLog[mappedKey] = rawDataToLog[key];
-      }
-    }
-
-    handler(dataToLog);
-  }
-}
-
-function logConsole(dataToLog) {
-  logToConsole(JSON.stringify(dataToLog));
-}
-
-function logToBigQuery(dataToLog) {
-  const connectionInfo = {
-    projectId: data.logBigQueryProjectId,
-    datasetId: data.logBigQueryDatasetId,
-    tableId: data.logBigQueryTableId
-  };
-
-  dataToLog.timestamp = getTimestampMillis();
-
-  ['request_body', 'response_headers', 'response_body'].forEach((p) => {
-    dataToLog[p] = JSON.stringify(dataToLog[p]);
-  });
-
-  BigQuery.insert(connectionInfo, [dataToLog], { ignoreUnknownValues: true });
-}
-
-function determinateIsLoggingEnabled() {
-  const containerVersion = getContainerVersion();
-  const isDebug = !!(
-    containerVersion &&
-    (containerVersion.debugMode || containerVersion.previewMode)
-  );
-
-  if (!data.logType) {
-    return isDebug;
-  }
-
-  if (data.logType === 'no') {
-    return false;
-  }
-
-  if (data.logType === 'debug') {
-    return isDebug;
-  }
-
-  return data.logType === 'always';
-}
-
-function determinateIsLoggingEnabledForBigQuery() {
-  if (data.bigQueryLogType === 'no') return false;
-  return data.bigQueryLogType === 'always';
 }
