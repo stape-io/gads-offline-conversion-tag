@@ -549,7 +549,7 @@ const sha256Sync = require('sha256Sync');
 /*==============================================================================
 ==============================================================================*/
 
-const API_VERSION = '24';
+const API_VERSION = '25';
 const eventData = getAllEventData();
 
 if (!isConsentGivenOrNotRequired(data, eventData)) {
@@ -1281,6 +1281,9 @@ setup: |-
 
 
 ___NOTES___
+
+2026-08-13 Change Notes:
+ - API version bump to v25.
 
 2026-05-25 Change Notes:
  - Logging removal.
